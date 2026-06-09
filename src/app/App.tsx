@@ -90,7 +90,9 @@ export default function App() {
 
   const isAuthScreen = AUTH_SCREENS.includes(screen);
   const bgImage = isAuthScreen ? theme.backgrounds.login : theme.backgrounds.app;
-  const overlay = isAuthScreen ? theme.overlays.login : theme.overlays.app;
+  const overlay = screen === 'login' ? theme.overlays.login
+    : screen === 'register' ? theme.overlays.register
+    : theme.overlays.app;
 
   return (
     // Outer shell — fills viewport, centers the 430px column, paints the letterbox

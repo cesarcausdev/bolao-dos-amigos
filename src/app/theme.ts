@@ -40,6 +40,7 @@ export const theme = {
   // Gradient overlays applied on top of background images
   overlays: {
     login: 'none',
+    register: 'linear-gradient(to bottom, rgba(7,21,13,0.55) 0%, rgba(7,21,13,0.88) 100%)',
     app: 'linear-gradient(to bottom, rgba(7,21,13,0.55) 0%, rgba(7,21,13,0.82) 100%)',
   },
 } as const;
