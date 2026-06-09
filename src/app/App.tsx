@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
+import { theme } from './theme';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { Home } from './components/Home';
@@ -87,9 +88,22 @@ export default function App() {
     }
   };
 
+  const isAuthScreen = AUTH_SCREENS.includes(screen);
+  const bgImage = isAuthScreen ? theme.backgrounds.login : theme.backgrounds.app;
+  const overlay = isAuthScreen ? theme.overlays.login : theme.overlays.app;
+
   return (
-    <div className="flex items-start justify-center min-h-screen" style={{ background: '#060D1A' }}>
-      <div className="relative w-full max-w-[430px] min-h-screen" style={{ background: '#0F172A' }}>
+    <div className="flex items-start justify-center min-h-screen" style={{ background: theme.colors.background }}>
+      <div
+        className="relative w-full max-w-[430px] min-h-screen"
+        style={{
+          backgroundImage: `${overlay}, url(${bgImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundAttachment: 'fixed',
+          backgroundColor: theme.colors.background,
+        }}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={screen}

@@ -1,6 +1,7 @@
 import { Home, Trophy, Users, User } from 'lucide-react';
-import type { Screen } from './types';
 import { motion } from 'motion/react';
+import { theme } from '../theme';
+import type { Screen } from './types';
 
 interface BottomNavProps {
   active: string;
@@ -21,8 +22,8 @@ export function BottomNav({ active, onNavigate }: BottomNavProps) {
 
   return (
     <div
-      style={{ background: '#0F172A', borderTop: '1px solid rgba(255,255,255,0.08)' }}
-      className="fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center py-2 pb-safe"
+      className="fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center py-2 pb-safe max-w-[430px] mx-auto"
+      style={{ background: theme.colors.navBg, borderTop: `1px solid ${theme.colors.navBorder}`, backdropFilter: 'blur(16px)' }}
     >
       {navItems.map((item) => {
         const active_ = isActive(item.id);
@@ -36,18 +37,18 @@ export function BottomNav({ active, onNavigate }: BottomNavProps) {
             {active_ && (
               <motion.div
                 layoutId="nav-indicator"
-                style={{ background: '#22C55E' }}
                 className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full"
+                style={{ background: theme.colors.primary }}
               />
             )}
             <Icon
               size={22}
-              style={{ color: active_ ? '#22C55E' : '#94A3B8' }}
+              style={{ color: active_ ? theme.colors.primary : theme.colors.textSecondary }}
               strokeWidth={active_ ? 2.5 : 1.5}
             />
             <span
               className="text-[10px]"
-              style={{ color: active_ ? '#22C55E' : '#94A3B8', fontWeight: active_ ? 600 : 400 }}
+              style={{ color: active_ ? theme.colors.primary : theme.colors.textSecondary, fontWeight: active_ ? 600 : 400 }}
             >
               {item.label}
             </span>
