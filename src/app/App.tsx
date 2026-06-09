@@ -94,7 +94,7 @@ export default function App() {
 
   return (
     // Outer shell — fills viewport, centers the 430px column, paints the letterbox
-    <div className="flex justify-center min-h-screen" style={{ background: theme.colors.background }}>
+    <div className="flex justify-center min-h-screen" style={{ background: '#000' }}>
       {/* App column — never wider than a phone */}
       <div
         className="relative w-full min-h-screen"

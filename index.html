@@ -1,22 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Bolão App Design</title>
-      <meta name="description" content="Engage in football prediction pools with friends by joining contests, tracking rankings, and managing your profile in a sleek mobile-first interface." />
-      <meta name="robots" content="noindex, nofollow" />
-      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
-      
-    </head>
+    <title>Bolão dos Amigos</title>
+    <meta name="description" content="Faça seus palpites, dispute com os amigos e suba no ranking. O bolão de futebol mais divertido da galera." />
 
-    <body>
-      
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-      
-    </body>
-  </html>
-  
+    <!-- Canonical / indexing -->
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph (WhatsApp, Facebook, Telegram) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Bolão dos Amigos" />
+    <meta property="og:title" content="Bolão dos Amigos ⚽🏆" />
+    <meta property="og:description" content="Faça seus palpites, dispute com os amigos e suba no ranking. O bolão de futebol mais divertido da galera." />
+    <meta property="og:image" content="%VITE_APP_URL%/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:url" content="%VITE_APP_URL%" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bolão dos Amigos ⚽🏆" />
+    <meta name="twitter:description" content="Faça seus palpites, dispute com os amigos e suba no ranking." />
+    <meta name="twitter:image" content="%VITE_APP_URL%/og-image.jpg" />
+
+    <!-- PWA / mobile chrome -->
+    <meta name="theme-color" content="#07150D" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <style>
+      html, body { height: 100%; margin: 0; background: #000; }
+      #root { height: 100%; }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
