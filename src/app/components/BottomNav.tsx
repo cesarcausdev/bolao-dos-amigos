@@ -22,7 +22,7 @@ export function BottomNav({ active, onNavigate }: BottomNavProps) {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center py-2 pb-safe max-w-[430px] mx-auto"
+      className="flex justify-around items-center py-2 pb-safe w-full"
       style={{ background: theme.colors.navBg, borderTop: `1px solid ${theme.colors.navBorder}`, backdropFilter: 'blur(16px)' }}
     >
       {navItems.map((item) => {

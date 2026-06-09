@@ -93,14 +93,17 @@ export default function App() {
   const overlay = isAuthScreen ? theme.overlays.login : theme.overlays.app;
 
   return (
-    <div className="flex items-start justify-center min-h-screen" style={{ background: theme.colors.background }}>
+    // Outer shell — fills viewport, centers the 430px column, paints the letterbox
+    <div className="flex justify-center min-h-screen" style={{ background: theme.colors.background }}>
+      {/* App column — never wider than a phone */}
       <div
-        className="relative w-full max-w-[430px] min-h-screen"
+        className="relative w-full min-h-screen"
         style={{
+          maxWidth: 430,
           backgroundImage: `${overlay}, url(${bgImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center top',
-          backgroundAttachment: 'fixed',
+          backgroundAttachment: 'scroll', // 'fixed' would paint relative to viewport, breaking desktop
           backgroundColor: theme.colors.background,
         }}
       >
@@ -117,15 +120,21 @@ export default function App() {
           </motion.div>
         </AnimatePresence>
 
+        {/* BottomNav wrapper — fixed + re-centered to stay inside the 430px column on desktop */}
         {showNav && (
-          <BottomNav
-            active={screen}
-            onNavigate={(s) => {
-              setHistory([]);
-              setScreenData(null);
-              setScreen(s);
-            }}
-          />
+          <div
+            className="fixed bottom-0 left-1/2 z-50 w-full"
+            style={{ transform: 'translateX(-50%)', maxWidth: 430 }}
+          >
+            <BottomNav
+              active={screen}
+              onNavigate={(s) => {
+                setHistory([]);
+                setScreenData(null);
+                setScreen(s);
+              }}
+            />
+          </div>
         )}
       </div>
     </div>
