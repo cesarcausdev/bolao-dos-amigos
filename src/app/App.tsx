@@ -100,10 +100,10 @@ export default function App() {
         className="relative w-full min-h-screen"
         style={{
           maxWidth: 430,
-          backgroundImage: `${overlay}, url(${bgImage})`,
+          backgroundImage: overlay === 'none' ? `url(${bgImage})` : `${overlay}, url(${bgImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center top',
-          backgroundAttachment: 'scroll', // 'fixed' would paint relative to viewport, breaking desktop
+          backgroundAttachment: 'scroll',
           backgroundColor: theme.colors.background,
         }}
       >
