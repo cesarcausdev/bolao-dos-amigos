@@ -1,0 +1,41 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.log
+TestResults/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+
+# EF Core migrations (keep tracked, but ignore IDE artifacts)
+*.db
+*.db-shm
+*.db-wal
+
+# Node / Frontend
+node_modules/
+dist/
+.pnp
+.pnp.js
+yarn-error.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+appsettings.*.local.json
+
+# IDE
+.idea/
+.vscode/settings.json
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

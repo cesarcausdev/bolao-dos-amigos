@@ -1,0 +1,167 @@
+using Bolao.Application.DTOs;
+using Bolao.Application.Interfaces;
+using Bolao.Domain.Enums;
+using Bolao.Shared.Exceptions;
+using BolaoEntity = Bolao.Domain.Entities.Bolao;
+using BolaoParticipant = Bolao.Domain.Entities.BolaoParticipant;
+
+namespace Bolao.Application.Services;
+
+public class BolaoService : IBolaoService
+{
+    private readonly IBolaoRepository _boloes;
+    private readonly IUserRepository _users;
+    private readonly IPalpiteRepository _palpites;
+
+    public BolaoService(IBolaoRepository boloes, IUserRepository users, IPalpiteRepository palpites)
+    {
+        _boloes = boloes;
+        _users = users;
+        _palpites = palpites;
+    }
+
+    public async Task<List<BolaoDto>> GetAllAsync(BolaoStatus? status = null)
+    {
+        var boloes = await _boloes.GetAllAsync(status);
+        return boloes.Select(MapToDto).ToList();
+    }
+
+    public async Task<BolaoDetailDto> GetDetailAsync(Guid id, Guid? requestingUserId = null)
+    {
+        var bolao = await _boloes.GetByIdWithDetailsAsync(id)
+            ?? throw AppException.NotFound("Bolão");
+
+        var palpitesPorUser = bolao.Palpites.ToDictionary(p => p.UserId);
+
+        var participants = bolao.Participants
+            .OrderByDescending(p => palpitesPorUser.TryGetValue(p.UserId, out var pal) ? pal.Pontos ?? 0 : 0)
+            .Select((p, idx) =>
+            {
+                palpitesPorUser.TryGetValue(p.UserId, out var palpite);
+                return new ParticipantDto(
+                    p.UserId,
+                    p.User.Name,
+                    p.User.Avatar,
+                    palpite is not null ? new PalpiteResultDto(palpite.PlacarHome, palpite.PlacarAway) : null,
+                    palpite?.Pontos ?? 0,
+                    idx + 1
+                );
+            }).ToList();
+
+        return new BolaoDetailDto(
+            bolao.Id,
+            new TeamDto(bolao.HomeTeamId, bolao.HomeTeamName, bolao.HomeTeamFlag),
+            new TeamDto(bolao.AwayTeamId, bolao.AwayTeamName, bolao.AwayTeamFlag),
+            bolao.MatchDate,
+            bolao.Status,
+            bolao.HomeScore,
+            bolao.AwayScore,
+            bolao.CreatedBy.Name,
+            participants
+        );
+    }
+
+    public async Task<BolaoDto> CreateAsync(CreateBolaoDto dto, Guid createdById)
+    {
+        var creator = await _users.GetByIdAsync(createdById)
+            ?? throw AppException.NotFound("Usuário");
+
+        var bolao = new BolaoEntity
+        {
+            Id = Guid.NewGuid(),
+            HomeTeamId = dto.HomeTeamId,
+            HomeTeamName = dto.HomeTeamName,
+            HomeTeamFlag = dto.HomeTeamFlag,
+            AwayTeamId = dto.AwayTeamId,
+            AwayTeamName = dto.AwayTeamName,
+            AwayTeamFlag = dto.AwayTeamFlag,
+            MatchDate = dto.MatchDate.ToUniversalTime(),
+            Status = BolaoStatus.Aberto,
+            CreatedById = createdById,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        await _boloes.AddAsync(bolao);
+
+        // Creator joins automatically
+        await _boloes.AddParticipantAsync(new BolaoParticipant
+        {
+            Id = Guid.NewGuid(),
+            BolaoId = bolao.Id,
+            UserId = createdById,
+            JoinedAt = DateTime.UtcNow
+        });
+
+        bolao.CreatedBy = creator;
+        return MapToDto(bolao);
+    }
+
+    public async Task JoinAsync(Guid bolaoId, Guid userId)
+    {
+        var bolao = await _boloes.GetByIdAsync(bolaoId)
+            ?? throw AppException.NotFound("Bolão");
+
+        if (bolao.Status != BolaoStatus.Aberto)
+            throw new AppException("Este bolão não está mais aberto para novos participantes.");
+
+        if (await _boloes.IsParticipantAsync(bolaoId, userId))
+            throw AppException.Conflict("Você já está participando deste bolão.");
+
+        await _boloes.AddParticipantAsync(new BolaoParticipant
+        {
+            Id = Guid.NewGuid(),
+            BolaoId = bolaoId,
+            UserId = userId,
+            JoinedAt = DateTime.UtcNow
+        });
+    }
+
+    public async Task SetResultadoAsync(Guid bolaoId, SetResultadoDto dto, Guid requestingUserId)
+    {
+        var bolao = await _boloes.GetByIdAsync(bolaoId)
+            ?? throw AppException.NotFound("Bolão");
+
+        var user = await _users.GetByIdAsync(requestingUserId)
+            ?? throw AppException.NotFound("Usuário");
+
+        if (bolao.CreatedById != requestingUserId && !user.IsAdmin)
+            throw AppException.Forbidden("Apenas o criador ou admin pode definir o resultado.");
+
+        bolao.HomeScore = dto.HomeScore;
+        bolao.AwayScore = dto.AwayScore;
+        bolao.Status = BolaoStatus.Encerrado;
+        bolao.UpdatedAt = DateTime.UtcNow;
+
+        await _boloes.UpdateAsync(bolao);
+        await _palpites.UpdatePontosByBolaoAsync(bolaoId);
+    }
+
+    public async Task UpdateStatusAsync(Guid bolaoId, UpdateStatusDto dto, Guid requestingUserId)
+    {
+        var bolao = await _boloes.GetByIdAsync(bolaoId)
+            ?? throw AppException.NotFound("Bolão");
+
+        var user = await _users.GetByIdAsync(requestingUserId)
+            ?? throw AppException.NotFound("Usuário");
+
+        if (bolao.CreatedById != requestingUserId && !user.IsAdmin)
+            throw AppException.Forbidden("Apenas o criador ou admin pode alterar o status.");
+
+        bolao.Status = dto.Status;
+        bolao.UpdatedAt = DateTime.UtcNow;
+        await _boloes.UpdateAsync(bolao);
+    }
+
+    private static BolaoDto MapToDto(BolaoEntity b) => new(
+        b.Id,
+        new TeamDto(b.HomeTeamId, b.HomeTeamName, b.HomeTeamFlag),
+        new TeamDto(b.AwayTeamId, b.AwayTeamName, b.AwayTeamFlag),
+        b.MatchDate,
+        b.Status,
+        b.HomeScore,
+        b.AwayScore,
+        b.CreatedBy?.Name ?? string.Empty,
+        b.Participants?.Count ?? 0
+    );
+}

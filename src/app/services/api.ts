@@ -1,0 +1,166 @@
+import { getToken } from '../lib/auth';
+import type { Bolao, Participant, User } from '../components/types';
+
+// ── Raw API types (match .NET DTOs) ──────────────────────────────────────────
+
+interface ApiUser {
+  id: string; name: string; email: string;
+  avatar: string | null; totalPoints: number; bestRank: number; boloesCount: number;
+}
+interface ApiAuthResult { token: string; user: ApiUser; }
+interface ApiTeam { id: string; name: string; flag: string; }
+interface ApiBolao {
+  id: string; homeTeam: ApiTeam; awayTeam: ApiTeam; matchDate: string;
+  status: string; homeScore: number | null; awayScore: number | null;
+  createdBy: string; participantCount: number;
+}
+interface ApiParticipant {
+  userId: string; name: string; avatar: string | null;
+  palpite: { placarHome: number; placarAway: number } | null;
+  pontos: number; rank: number;
+}
+interface ApiBolaoDetail extends Omit<ApiBolao, 'participantCount'> {
+  participants: ApiParticipant[];
+}
+interface ApiRankingEntry {
+  rank: number; userId: string; name: string;
+  avatar: string | null; totalPoints: number; boloesCount: number;
+}
+
+// ── HTTP client ───────────────────────────────────────────────────────────────
+
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = getToken();
+  const res = await fetch(`/api${path}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    ...options,
+  });
+  if (res.status === 204) return null as T;
+  const body = await res.json().catch(() => ({ error: `Erro ${res.status}` }));
+  if (!res.ok) throw new Error(body.error || `Erro ${res.status}`);
+  return body as T;
+}
+
+// ── Mapping helpers ───────────────────────────────────────────────────────────
+
+const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+function fmtDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+function fmtTime(iso: string): string {
+  const d = new Date(iso);
+  return `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
+}
+function fmtStatus(s: string): Bolao['status'] {
+  if (s === 'EmAndamento') return 'Em Andamento';
+  return s as Bolao['status'];
+}
+function avatarFallback(avatar: string | null, id: string): string {
+  return avatar || `https://i.pravatar.cc/150?u=${id}`;
+}
+
+function mapUser(u: ApiUser): User {
+  return {
+    id: u.id, name: u.name, email: u.email,
+    avatar: avatarFallback(u.avatar, u.id),
+    points: u.totalPoints, bestRank: u.bestRank, boloesCount: u.boloesCount,
+  };
+}
+
+function mapBolao(b: ApiBolao): Bolao {
+  return {
+    id: b.id,
+    homeTeam: { name: b.homeTeam.name, shortName: b.homeTeam.id.slice(0, 3).toUpperCase(), flag: b.homeTeam.flag },
+    awayTeam: { name: b.awayTeam.name, shortName: b.awayTeam.id.slice(0, 3).toUpperCase(), flag: b.awayTeam.flag },
+    date: fmtDate(b.matchDate), time: fmtTime(b.matchDate),
+    participants: b.participantCount, organizer: b.createdBy,
+    status: fmtStatus(b.status),
+    homeScore: b.homeScore ?? undefined,
+    awayScore: b.awayScore ?? undefined,
+  };
+}
+
+function mapParticipant(p: ApiParticipant): Participant {
+  return {
+    id: p.userId, name: p.name,
+    avatar: avatarFallback(p.avatar, p.userId),
+    points: p.pontos,
+    prediction: p.palpite ? { home: p.palpite.placarHome, away: p.palpite.placarAway } : undefined,
+  };
+}
+
+// ── Public API ────────────────────────────────────────────────────────────────
+
+export const api = {
+  auth: {
+    login: async (email: string, password: string) => {
+      const r = await request<ApiAuthResult>('/auth/login', {
+        method: 'POST', body: JSON.stringify({ email, password }),
+      });
+      return { user: mapUser(r.user), token: r.token };
+    },
+    register: async (name: string, email: string, password: string) => {
+      const r = await request<ApiAuthResult>('/auth/register', {
+        method: 'POST', body: JSON.stringify({ name, email, password }),
+      });
+      return { user: mapUser(r.user), token: r.token };
+    },
+  },
+
+  boloes: {
+    getAll: async (status?: string): Promise<Bolao[]> => {
+      const qs = status ? `?status=${status}` : '';
+      const r = await request<ApiBolao[]>(`/boloes${qs}`);
+      return r.map(mapBolao);
+    },
+    getDetail: async (id: string): Promise<{ bolao: Bolao; participants: Participant[] }> => {
+      const r = await request<ApiBolaoDetail>(`/boloes/${id}`);
+      const bolao: Bolao = {
+        id: r.id,
+        homeTeam: { name: r.homeTeam.name, shortName: r.homeTeam.id.slice(0, 3).toUpperCase(), flag: r.homeTeam.flag },
+        awayTeam: { name: r.awayTeam.name, shortName: r.awayTeam.id.slice(0, 3).toUpperCase(), flag: r.awayTeam.flag },
+        date: fmtDate(r.matchDate), time: fmtTime(r.matchDate),
+        participants: r.participants.length, organizer: r.createdBy,
+        status: fmtStatus(r.status),
+        homeScore: r.homeScore ?? undefined,
+        awayScore: r.awayScore ?? undefined,
+      };
+      return { bolao, participants: r.participants.map(mapParticipant) };
+    },
+    join: (id: string) => request<null>(`/boloes/${id}/join`, { method: 'POST' }),
+    submitPalpite: (bolaoId: string, placarHome: number, placarAway: number) =>
+      request(`/boloes/${bolaoId}/palpites`, {
+        method: 'POST', body: JSON.stringify({ placarHome, placarAway }),
+      }),
+    updatePalpite: (bolaoId: string, placarHome: number, placarAway: number) =>
+      request(`/boloes/${bolaoId}/palpites`, {
+        method: 'PUT', body: JSON.stringify({ placarHome, placarAway }),
+      }),
+  },
+
+  ranking: {
+    getGlobal: async (): Promise<Participant[]> => {
+      const r = await request<ApiRankingEntry[]>('/ranking');
+      return r.map(e => ({
+        id: e.userId, name: e.name,
+        avatar: avatarFallback(e.avatar, e.userId),
+        points: e.totalPoints,
+      }));
+    },
+    getBolao: async (bolaoId: string): Promise<Participant[]> => {
+      const r = await request<ApiParticipant[]>(`/boloes/${bolaoId}/ranking`);
+      return r.map(mapParticipant);
+    },
+  },
+
+  profile: {
+    get: async (): Promise<User> => mapUser(await request<ApiUser>('/profile')),
+    update: async (data: { name?: string; avatar?: string }): Promise<User> =>
+      mapUser(await request<ApiUser>('/profile', { method: 'PUT', body: JSON.stringify(data) })),
+  },
+};

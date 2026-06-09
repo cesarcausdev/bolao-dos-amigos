@@ -1,0 +1,119 @@
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { Login } from './components/Login';
+import { Register } from './components/Register';
+import { Home } from './components/Home';
+import { BoloesList } from './components/BoloesList';
+import { Classificacao } from './components/Classificacao';
+import { BolaoDetail } from './components/BolaoDetail';
+import { Palpite } from './components/Palpite';
+import { PalpitesList } from './components/PalpitesList';
+import { Profile } from './components/Profile';
+import { BottomNav } from './components/BottomNav';
+import { loadAuth, saveAuth, clearAuth } from './lib/auth';
+import type { Screen, Bolao, User } from './components/types';
+
+const AUTH_SCREENS: Screen[] = ['login', 'register'];
+const screensWithNav: Screen[] = ['home', 'boloes', 'classificacao', 'bolao-detail', 'palpite', 'bolao-ranking', 'palpites-list', 'profile'];
+
+export default function App() {
+  const [screen, setScreen] = useState<Screen>('login');
+  const [screenData, setScreenData] = useState<unknown>(null);
+  const [history, setHistory] = useState<Array<{ screen: Screen; data: unknown }>>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const auth = loadAuth();
+    if (auth) {
+      setCurrentUser(auth.user);
+      setScreen('home');
+    }
+  }, []);
+
+  const navigate = (newScreen: Screen, data?: unknown) => {
+    setHistory(prev => [...prev, { screen, data: screenData }]);
+    setScreen(newScreen);
+    setScreenData(data ?? null);
+  };
+
+  const goBack = () => {
+    const prev = history[history.length - 1];
+    if (prev) {
+      setScreen(prev.screen);
+      setScreenData(prev.data);
+      setHistory(h => h.slice(0, -1));
+    }
+  };
+
+  const handleLogin = (user: User, token: string) => {
+    saveAuth(token, user);
+    setCurrentUser(user);
+    setHistory([]);
+    navigate('home');
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    setCurrentUser(null);
+    setHistory([]);
+    setScreenData(null);
+    setScreen('login');
+  };
+
+  const showNav = screensWithNav.includes(screen) && !AUTH_SCREENS.includes(screen);
+
+  const renderScreen = () => {
+    switch (screen) {
+      case 'login':
+        return <Login onNavigate={navigate} onLogin={handleLogin} />;
+      case 'register':
+        return <Register onNavigate={navigate} onRegister={handleLogin} />;
+      case 'home':
+        return <Home onNavigate={navigate} currentUser={currentUser} />;
+      case 'boloes':
+        return <BoloesList onNavigate={navigate} />;
+      case 'classificacao':
+        return <Classificacao currentUserId={currentUser?.id} />;
+      case 'bolao-detail':
+        return <BolaoDetail bolao={screenData as Bolao} onNavigate={navigate} onBack={goBack} currentUserId={currentUser?.id} />;
+      case 'palpite':
+        return <Palpite bolao={screenData as Bolao} onBack={goBack} onNavigate={navigate} />;
+      case 'palpites-list':
+        return <PalpitesList />;
+      case 'profile':
+        return <Profile onLogout={handleLogout} onNavigate={navigate} currentUser={currentUser} />;
+      default:
+        return <Home onNavigate={navigate} currentUser={currentUser} />;
+    }
+  };
+
+  return (
+    <div className="flex items-start justify-center min-h-screen" style={{ background: '#060D1A' }}>
+      <div className="relative w-full max-w-[430px] min-h-screen" style={{ background: '#0F172A' }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={screen}
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            className="w-full"
+          >
+            {renderScreen()}
+          </motion.div>
+        </AnimatePresence>
+
+        {showNav && (
+          <BottomNav
+            active={screen}
+            onNavigate={(s) => {
+              setHistory([]);
+              setScreenData(null);
+              setScreen(s);
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
