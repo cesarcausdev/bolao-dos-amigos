@@ -13,7 +13,7 @@ export type Screen =
 export interface User {
   id: string;
   name: string;
-  email: string;
+  username: string;
   avatar: string;
   points: number;
   bestRank: number;

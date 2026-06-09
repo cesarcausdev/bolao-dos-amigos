@@ -19,8 +19,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>(e =>
         {
             e.HasKey(x => x.Id);
-            e.HasIndex(x => x.Email).IsUnique();
-            e.Property(x => x.Email).HasMaxLength(256);
+            e.HasIndex(x => x.Username).IsUnique();
+            e.Property(x => x.Username).HasMaxLength(50);
             e.Property(x => x.Name).HasMaxLength(100);
             e.HasQueryFilter(x => !x.IsDeleted);
         });

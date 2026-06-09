@@ -25,15 +25,16 @@ public class AuthService : IAuthService
 
     public async Task<AuthResultDto> RegisterAsync(RegisterDto dto)
     {
-        var existing = await _users.GetByEmailAsync(dto.Email.ToLower().Trim());
+        var username = dto.Username.ToLower().Trim();
+        var existing = await _users.GetByUsernameAsync(username);
         if (existing is not null)
-            throw AppException.Conflict("E-mail já cadastrado.");
+            throw AppException.Conflict("Username já cadastrado.");
 
         var user = new User
         {
             Id = Guid.NewGuid(),
             Name = dto.Name.Trim(),
-            Email = dto.Email.ToLower().Trim(),
+            Username = username,
             PasswordHash = _passwords.Encrypt(dto.Password),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -45,15 +46,15 @@ public class AuthService : IAuthService
 
     public async Task<AuthResultDto> LoginAsync(LoginDto dto)
     {
-        var user = await _users.GetByEmailAsync(dto.Email.ToLower().Trim())
-            ?? throw AppException.Unauthorized("E-mail ou senha inválidos.");
+        var user = await _users.GetByUsernameAsync(dto.Username.ToLower().Trim())
+            ?? throw AppException.Unauthorized("Usuário ou senha inválidos.");
 
         string decrypted;
         try { decrypted = _passwords.Decrypt(user.PasswordHash); }
-        catch { throw AppException.Unauthorized("E-mail ou senha inválidos."); }
+        catch { throw AppException.Unauthorized("Usuário ou senha inválidos."); }
 
         if (decrypted != dto.Password)
-            throw AppException.Unauthorized("E-mail ou senha inválidos.");
+            throw AppException.Unauthorized("Usuário ou senha inválidos.");
 
         var boloesCount = await _users.CountBoloesAsync(user.Id);
         return new AuthResultDto(GenerateToken(user), MapUser(user, boloesCount));
@@ -66,7 +67,7 @@ public class AuthService : IAuthService
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim("username", user.Username),
             new Claim("name", user.Name),
             new Claim("admin", user.IsAdmin.ToString().ToLower()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -82,7 +83,7 @@ public class AuthService : IAuthService
     }
 
     private static UserDto MapUser(User user, int boloesCount) => new(
-        user.Id, user.Name, user.Email, user.Avatar,
+        user.Id, user.Name, user.Username, user.Avatar,
         user.TotalPoints, user.BestRank, boloesCount
     );
 }

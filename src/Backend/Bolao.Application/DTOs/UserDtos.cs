@@ -3,7 +3,7 @@ namespace Bolao.Application.DTOs;
 public record UserDto(
     Guid Id,
     string Name,
-    string Email,
+    string Username,
     string? Avatar,
     int TotalPoints,
     int BestRank,
@@ -12,5 +12,6 @@ public record UserDto(
 
 public record UpdateProfileDto(
     string? Name,
+    string? Username,
     string? Avatar
 );

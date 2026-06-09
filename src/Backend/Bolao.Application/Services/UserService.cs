@@ -19,7 +19,7 @@ public class UserService : IUserService
             ?? throw AppException.NotFound("Usuário");
 
         var count = await _users.CountBoloesAsync(userId);
-        return new UserDto(user.Id, user.Name, user.Email, user.Avatar, user.TotalPoints, user.BestRank, count);
+        return new UserDto(user.Id, user.Name, user.Username, user.Avatar, user.TotalPoints, user.BestRank, count);
     }
 
     public async Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileDto dto)
@@ -30,6 +30,15 @@ public class UserService : IUserService
         if (!string.IsNullOrWhiteSpace(dto.Name))
             user.Name = dto.Name.Trim();
 
+        if (!string.IsNullOrWhiteSpace(dto.Username))
+        {
+            var newUsername = dto.Username.ToLower().Trim();
+            var taken = await _users.GetByUsernameAsync(newUsername);
+            if (taken is not null && taken.Id != userId)
+                throw AppException.Conflict("Username já está em uso.");
+            user.Username = newUsername;
+        }
+
         if (dto.Avatar is not null)
             user.Avatar = dto.Avatar;
 
@@ -37,6 +46,6 @@ public class UserService : IUserService
         await _users.UpdateAsync(user);
 
         var count = await _users.CountBoloesAsync(userId);
-        return new UserDto(user.Id, user.Name, user.Email, user.Avatar, user.TotalPoints, user.BestRank, count);
+        return new UserDto(user.Id, user.Name, user.Username, user.Avatar, user.TotalPoints, user.BestRank, count);
     }
 }

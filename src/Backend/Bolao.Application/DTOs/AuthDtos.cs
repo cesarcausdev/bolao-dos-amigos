@@ -2,12 +2,12 @@ namespace Bolao.Application.DTOs;
 
 public record RegisterDto(
     string Name,
-    string Email,
+    string Username,
     string Password
 );
 
 public record LoginDto(
-    string Email,
+    string Username,
     string Password
 );
 

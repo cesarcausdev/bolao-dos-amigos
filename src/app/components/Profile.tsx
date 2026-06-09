@@ -41,7 +41,7 @@ export function Profile({ onLogout, currentUser }: ProfileProps) {
           </div>
           <div className="text-center">
             <h2 className="text-xl font-black" style={{ color: '#FFFFFF' }}>{currentUser?.name ?? '…'}</h2>
-            <p className="text-sm" style={{ color: '#94A3B8' }}>{currentUser?.email ?? ''}</p>
+            <p className="text-sm" style={{ color: '#94A3B8' }}>@{currentUser?.username ?? ''}</p>
           </div>
         </div>
       </div>

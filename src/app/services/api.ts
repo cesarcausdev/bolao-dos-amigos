@@ -4,7 +4,7 @@ import type { Bolao, Participant, User } from '../components/types';
 // ── Raw API types (match .NET DTOs) ──────────────────────────────────────────
 
 interface ApiUser {
-  id: string; name: string; email: string;
+  id: string; name: string; username: string;
   avatar: string | null; totalPoints: number; bestRank: number; boloesCount: number;
 }
 interface ApiAuthResult { token: string; user: ApiUser; }
@@ -66,7 +66,7 @@ function avatarFallback(avatar: string | null, id: string): string {
 
 function mapUser(u: ApiUser): User {
   return {
-    id: u.id, name: u.name, email: u.email,
+    id: u.id, name: u.name, username: u.username,
     avatar: avatarFallback(u.avatar, u.id),
     points: u.totalPoints, bestRank: u.bestRank, boloesCount: u.boloesCount,
   };
@@ -98,15 +98,15 @@ function mapParticipant(p: ApiParticipant): Participant {
 
 export const api = {
   auth: {
-    login: async (email: string, password: string) => {
+    login: async (username: string, password: string) => {
       const r = await request<ApiAuthResult>('/auth/login', {
-        method: 'POST', body: JSON.stringify({ email, password }),
+        method: 'POST', body: JSON.stringify({ username, password }),
       });
       return { user: mapUser(r.user), token: r.token };
     },
-    register: async (name: string, email: string, password: string) => {
+    register: async (name: string, username: string, password: string) => {
       const r = await request<ApiAuthResult>('/auth/register', {
-        method: 'POST', body: JSON.stringify({ name, email, password }),
+        method: 'POST', body: JSON.stringify({ name, username, password }),
       });
       return { user: mapUser(r.user), token: r.token };
     },

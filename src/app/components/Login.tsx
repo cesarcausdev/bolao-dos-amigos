@@ -9,21 +9,21 @@ interface LoginProps {
 }
 
 export function Login({ onNavigate, onLogin }: LoginProps) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
+    if (!username || !password) return;
     setLoading(true);
     setError('');
     try {
-      const { user, token } = await api.auth.login(email, password);
+      const { user, token } = await api.auth.login(username, password);
       onLogin(user, token);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer login.');
+      setError(err instanceof Error ? err.message : 'Usuário ou senha inválidos.');
     } finally {
       setLoading(false);
     }
@@ -71,12 +71,14 @@ export function Login({ onNavigate, onLogin }: LoginProps) {
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm mb-2" style={{ color: '#94A3B8' }}>E-mail</label>
+            <label className="block text-sm mb-2" style={{ color: '#94A3B8' }}>Username</label>
             <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="seu@email.com"
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value.toLowerCase().replace(/\s/g, ''))}
+              placeholder="seu_username"
+              autoCapitalize="none"
+              autoCorrect="off"
               className="w-full px-4 py-3 rounded-xl outline-none border transition-all"
               style={{ background: '#1E293B', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.1)', fontSize: 15 }}
               onFocus={e => (e.target.style.borderColor = '#22C55E')}
