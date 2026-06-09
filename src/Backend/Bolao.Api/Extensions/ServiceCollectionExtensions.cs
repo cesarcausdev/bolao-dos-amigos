@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration config)
     {
-        var key = config["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key não configurado.");
+        var key = config["Jwt:Key"].NullIfEmpty() ?? throw new InvalidOperationException("Jwt:Key não configurado.");
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(opts =>
             {
@@ -60,11 +60,14 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    private static string? NullIfEmpty(this string? s) => string.IsNullOrWhiteSpace(s) ? null : s;
+
     // Accepts both Npgsql format and Railway PostgreSQL URI format
     private static string ResolveConnectionString(IConfiguration config)
     {
-        var connStr = config.GetConnectionString("PostgreSQL")
-            ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+        var connStr = config.GetConnectionString("PostgreSQL").NullIfEmpty()
+            ?? Environment.GetEnvironmentVariable("DATABASE_URL").NullIfEmpty()
+            ?? Environment.GetEnvironmentVariable("DATABASE_PUBLIC_URL").NullIfEmpty()
             ?? throw new InvalidOperationException("Connection string PostgreSQL não configurada.");
 
         if (!connStr.StartsWith("postgresql://") && !connStr.StartsWith("postgres://"))

@@ -11,8 +11,9 @@ public class PasswordService : IPasswordService
 
     public PasswordService(IConfiguration config)
     {
-        var rawKey = config["Encryption:Key"]
-            ?? throw new InvalidOperationException("Encryption:Key não configurado.");
+        var rawKey = config["Encryption:Key"];
+        if (string.IsNullOrWhiteSpace(rawKey))
+            throw new InvalidOperationException("Encryption:Key não configurado.");
         using var sha = SHA256.Create();
         _key = sha.ComputeHash(Encoding.UTF8.GetBytes(rawKey));
     }
