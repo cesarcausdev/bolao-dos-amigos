@@ -39,7 +39,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
     bolao.createdById === currentUserId ||
     bolao.organizerId === currentUserId
   ));
-  const canManageResult = canOrganize && isEmAndamento;
+  const canManageResult = canOrganize && !isEncerrado;
 
   const myParticipant = currentUserId
     ? participants.find(p => p.id === currentUserId)
