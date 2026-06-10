@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { api } from '../services/api';
 import { theme } from '../theme';
@@ -33,6 +33,8 @@ export function Register({ onNavigate, onRegister }: RegisterProps) {
   const [usernameEdited, setUsernameEdited] = useState(false);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -131,17 +133,31 @@ export function Register({ onNavigate, onRegister }: RegisterProps) {
           {/* Senha */}
           <div>
             <label className="block text-sm mb-2" style={{ color: theme.colors.textSecondary }}>Senha</label>
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••" className="w-full px-4 py-3 rounded-xl outline-none border transition-all"
-              style={inputStyle} onFocus={onFocus} onBlur={onBlur} />
+            <div className="relative">
+              <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••" className="w-full px-4 py-3 pr-12 rounded-xl outline-none border transition-all"
+                style={inputStyle} onFocus={onFocus} onBlur={onBlur} />
+              <button type="button" onClick={() => setShowPassword(v => !v)}
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+                style={{ color: theme.colors.textSecondary }}>
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {/* Confirmar */}
           <div>
             <label className="block text-sm mb-2" style={{ color: theme.colors.textSecondary }}>Confirmar senha</label>
-            <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)}
-              placeholder="••••••••" className="w-full px-4 py-3 rounded-xl outline-none border transition-all"
-              style={inputStyle} onFocus={onFocus} onBlur={onBlur} />
+            <div className="relative">
+              <input type={showConfirm ? 'text' : 'password'} value={confirm} onChange={e => setConfirm(e.target.value)}
+                placeholder="••••••••" className="w-full px-4 py-3 pr-12 rounded-xl outline-none border transition-all"
+                style={inputStyle} onFocus={onFocus} onBlur={onBlur} />
+              <button type="button" onClick={() => setShowConfirm(v => !v)}
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+                style={{ color: theme.colors.textSecondary }}>
+                {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <motion.button

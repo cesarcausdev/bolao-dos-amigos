@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { api } from '../services/api';
 import { theme } from '../theme';
@@ -12,6 +13,7 @@ interface LoginProps {
 export function Login({ onNavigate, onLogin }: LoginProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -67,13 +69,13 @@ export function Login({ onNavigate, onLogin }: LoginProps) {
               onBlur={e => (e.target.style.borderColor = theme.colors.inputBorder)}
             />
           </div>
-          <div>
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={e => setPassword(e.target.value)}
               placeholder="Senha"
-              className="w-full px-4 py-4 rounded-xl outline-none border transition-all text-sm"
+              className="w-full px-4 py-4 pr-12 rounded-xl outline-none border transition-all text-sm"
               style={{
                 background: theme.colors.inputBg,
                 color: theme.colors.text,
@@ -83,6 +85,14 @@ export function Login({ onNavigate, onLogin }: LoginProps) {
               onFocus={e => (e.target.style.borderColor = theme.colors.inputBorderFocus)}
               onBlur={e => (e.target.style.borderColor = theme.colors.inputBorder)}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(v => !v)}
+              className="absolute right-4 top-1/2 -translate-y-1/2"
+              style={{ color: theme.colors.textSecondary }}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
           <motion.button
