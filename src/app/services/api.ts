@@ -198,7 +198,13 @@ export const api = {
 
   profile: {
     get: async (): Promise<User> => mapUser(await request<ApiUser>('/profile')),
-    update: async (data: { name?: string; avatar?: string }): Promise<User> =>
+    update: async (data: {
+      name?: string;
+      username?: string;
+      avatar?: string;
+      currentPassword?: string;
+      newPassword?: string;
+    }): Promise<User> =>
       mapUser(await request<ApiUser>('/profile', { method: 'PUT', body: JSON.stringify(data) })),
     uploadAvatar: async (file: File): Promise<User> => {
       const token = getToken();

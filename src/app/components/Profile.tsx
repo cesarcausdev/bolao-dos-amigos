@@ -1,4 +1,4 @@
-import { LogOut, Trophy, Users, Star, ChevronRight, Settings, Shield } from 'lucide-react';
+import { LogOut, Trophy, Users, Star, ChevronRight, UserCog, Shield } from 'lucide-react';
 import { motion } from 'motion/react';
 import { theme } from '../theme';
 import type { Screen, User } from './types';
@@ -9,15 +9,15 @@ interface ProfileProps {
   currentUser: User | null;
 }
 
-export function Profile({ onLogout, currentUser }: ProfileProps) {
+export function Profile({ onLogout, onNavigate, currentUser }: ProfileProps) {
   const stats = [
     { label: 'Pontos totais', value: currentUser?.points ?? 0, icon: '⭐', color: theme.colors.primary },
     { label: 'Bolões', value: currentUser?.boloesCount ?? 0, icon: '⚽', color: theme.colors.success },
     { label: 'Melhor posição', value: currentUser?.bestRank ? `#${currentUser.bestRank}` : '—', icon: '🏆', color: theme.colors.primaryLight },
   ];
 
-  const menuItems = [
-    { icon: Settings, label: 'Configurações', color: theme.colors.textSecondary },
+  const menuItems: { icon: typeof UserCog; label: string; color: string; action?: () => void }[] = [
+    { icon: UserCog, label: 'Editar perfil', color: theme.colors.primary, action: () => onNavigate('edit-profile') },
     { icon: Shield, label: 'Privacidade', color: theme.colors.textSecondary },
     { icon: Trophy, label: 'Minhas conquistas', color: theme.colors.primary },
     { icon: Users, label: 'Convidar amigos', color: theme.colors.success },
@@ -67,6 +67,7 @@ export function Profile({ onLogout, currentUser }: ProfileProps) {
             const Icon = item.icon;
             return (
               <button key={i}
+                onClick={item.action}
                 className="w-full flex items-center gap-3 px-4 py-4 transition-all active:bg-white/5"
                 style={{ borderBottom: i < menuItems.length - 1 ? `1px solid ${theme.colors.cardBorder}` : 'none' }}>
                 <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${item.color}18` }}>

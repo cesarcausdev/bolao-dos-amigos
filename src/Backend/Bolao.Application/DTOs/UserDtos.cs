@@ -20,5 +20,7 @@ public record UserSummaryDto(
 public record UpdateProfileDto(
     string? Name,
     string? Username,
-    string? Avatar
+    string? Avatar,
+    string? CurrentPassword = null,
+    string? NewPassword = null
 );

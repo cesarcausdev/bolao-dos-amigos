@@ -27,3 +27,7 @@ export function clearAuth(): void {
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
+
+export function updateStoredUser(user: User): void {
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+}

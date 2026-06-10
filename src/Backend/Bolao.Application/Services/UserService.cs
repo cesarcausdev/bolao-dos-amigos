@@ -7,10 +7,12 @@ namespace Bolao.Application.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _users;
+    private readonly IPasswordService _passwords;
 
-    public UserService(IUserRepository users)
+    public UserService(IUserRepository users, IPasswordService passwords)
     {
         _users = users;
+        _passwords = passwords;
     }
 
     public async Task<UserDto> GetProfileAsync(Guid userId)
@@ -47,6 +49,21 @@ public class UserService : IUserService
 
         if (dto.Avatar is not null)
             user.Avatar = dto.Avatar;
+
+        if (!string.IsNullOrWhiteSpace(dto.NewPassword))
+        {
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+                throw new AppException("Informe a senha atual para alterá-la.");
+
+            string current;
+            try { current = _passwords.Decrypt(user.PasswordHash); }
+            catch { throw new AppException("Senha atual inválida."); }
+
+            if (current != dto.CurrentPassword)
+                throw new AppException("Senha atual incorreta.");
+
+            user.PasswordHash = _passwords.Encrypt(dto.NewPassword);
+        }
 
         user.UpdatedAt = DateTime.UtcNow;
         await _users.UpdateAsync(user);

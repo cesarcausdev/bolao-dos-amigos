@@ -11,9 +11,10 @@ import { BolaoDetail } from './components/BolaoDetail';
 import { Palpite } from './components/Palpite';
 import { PalpitesList } from './components/PalpitesList';
 import { Profile } from './components/Profile';
+import { EditProfile } from './components/EditProfile';
 import { CriarBolao } from './components/CriarBolao';
 import { BottomNav } from './components/BottomNav';
-import { loadAuth, saveAuth, clearAuth } from './lib/auth';
+import { loadAuth, saveAuth, clearAuth, updateStoredUser } from './lib/auth';
 import type { Screen, Bolao, User } from './components/types';
 
 const AUTH_SCREENS: Screen[] = ['login', 'register'];
@@ -70,6 +71,12 @@ export default function App() {
     setScreenData(null);
   };
 
+  const handleUpdateUser = (updatedUser: User) => {
+    updateStoredUser(updatedUser);
+    setCurrentUser(updatedUser);
+    goBack();
+  };
+
   const handleLogout = () => {
     clearAuth();
     setCurrentUser(null);
@@ -104,6 +111,8 @@ export default function App() {
         return <PalpitesList />;
       case 'profile':
         return <Profile onLogout={handleLogout} onNavigate={navigate} currentUser={currentUser} />;
+      case 'edit-profile':
+        return <EditProfile currentUser={currentUser} onBack={goBack} onSaved={handleUpdateUser} />;
       case 'criar-bolao':
         return <CriarBolao onBack={goBack} onNavigate={navigate} />;
       case 'editar-bolao':

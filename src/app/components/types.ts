@@ -2,6 +2,7 @@ export type Screen =
   | 'login'
   | 'register'
   | 'upload-avatar'
+  | 'edit-profile'
   | 'home'
   | 'boloes'
   | 'classificacao'
