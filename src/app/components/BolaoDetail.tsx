@@ -38,7 +38,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
     bolao.createdById === currentUserId ||
     bolao.organizerId === currentUserId
   ));
-  const canManageResult = canOrganize && !isEncerrado;
+  const canManageResult = canOrganize && !isAberto;
 
   const myParticipant = currentUserId
     ? participants.find(p => p.id === currentUserId)
@@ -104,7 +104,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
                 style={{ background: 'rgba(242,194,48,0.15)', border: `1px solid rgba(242,194,48,0.4)`, color: theme.colors.primary }}
               >
                 <Trophy size={12} />
-                Incluir Resultado
+                {isEncerrado ? 'Corrigir Resultado' : 'Incluir Resultado'}
               </motion.button>
             )}
             {canEdit && (

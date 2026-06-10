@@ -14,14 +14,13 @@ interface PalpiteProps {
 
 export function Palpite({ bolao, myPrediction, onBack, onNavigate }: PalpiteProps) {
   const isEdit = !!myPrediction;
-  const [homeGoals, setHomeGoals] = useState<number | ''>(myPrediction?.home ?? '');
-  const [awayGoals, setAwayGoals] = useState<number | ''>(myPrediction?.away ?? '');
+  const [homeGoals, setHomeGoals] = useState<number>(myPrediction?.home ?? 0);
+  const [awayGoals, setAwayGoals] = useState<number>(myPrediction?.away ?? 0);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleConfirm = async () => {
-    if (homeGoals === '' || awayGoals === '') return;
     setLoading(true);
     setError('');
     try {
@@ -39,11 +38,9 @@ export function Palpite({ bolao, myPrediction, onBack, onNavigate }: PalpiteProp
     }
   };
 
-  const adjust = (setter: (v: number) => void, current: number | '', delta: number) => {
-    setter(Math.max(0, Math.min(20, (current === '' ? 0 : current) + delta)));
+  const adjust = (setter: (v: number) => void, current: number, delta: number) => {
+    setter(Math.max(0, Math.min(20, current + delta)));
   };
-
-  const btnReady = homeGoals !== '' && awayGoals !== '';
 
   return (
     <div className="flex flex-col min-h-screen pb-24">
@@ -71,7 +68,7 @@ export function Palpite({ bolao, myPrediction, onBack, onNavigate }: PalpiteProp
                   style={{ background: 'rgba(255,255,255,0.07)', color: theme.colors.text }}>−</button>
                 <div className="w-12 h-14 rounded-xl flex items-center justify-center text-3xl font-black"
                   style={{ background: theme.colors.secondaryDark, color: theme.colors.primary }}>
-                  {homeGoals === '' ? '—' : homeGoals}
+                  {homeGoals}
                 </div>
                 <button onClick={() => adjust(v => setHomeGoals(v), homeGoals, 1)}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
@@ -91,7 +88,7 @@ export function Palpite({ bolao, myPrediction, onBack, onNavigate }: PalpiteProp
                   style={{ background: 'rgba(255,255,255,0.07)', color: theme.colors.text }}>−</button>
                 <div className="w-12 h-14 rounded-xl flex items-center justify-center text-3xl font-black"
                   style={{ background: theme.colors.secondaryDark, color: theme.colors.primary }}>
-                  {awayGoals === '' ? '—' : awayGoals}
+                  {awayGoals}
                 </div>
                 <button onClick={() => adjust(v => setAwayGoals(v), awayGoals, 1)}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
@@ -101,16 +98,14 @@ export function Palpite({ bolao, myPrediction, onBack, onNavigate }: PalpiteProp
           </div>
         </div>
 
-        {btnReady && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl px-4 py-3 mb-4 flex items-center gap-3"
-            style={{ background: 'rgba(242,194,48,0.08)', border: `1px solid ${theme.colors.cardBorder}` }}>
-            <span className="text-xl">🎯</span>
-            <p className="text-sm font-medium" style={{ color: theme.colors.primary }}>
-              {bolao.homeTeam.name} {homeGoals} × {awayGoals} {bolao.awayTeam.name}
-            </p>
-          </motion.div>
-        )}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl px-4 py-3 mb-4 flex items-center gap-3"
+          style={{ background: 'rgba(242,194,48,0.08)', border: `1px solid ${theme.colors.cardBorder}` }}>
+          <span className="text-xl">🎯</span>
+          <p className="text-sm font-medium" style={{ color: theme.colors.primary }}>
+            {bolao.homeTeam.name} {homeGoals} × {awayGoals} {bolao.awayTeam.name}
+          </p>
+        </motion.div>
 
         {error && (
           <div className="mb-4 px-4 py-3 rounded-xl text-sm" style={{ background: theme.colors.dangerBg, color: theme.colors.danger, border: `1px solid ${theme.colors.dangerBorder}` }}>
@@ -120,13 +115,12 @@ export function Palpite({ bolao, myPrediction, onBack, onNavigate }: PalpiteProp
 
         <div className="mt-auto pb-4">
           <motion.button whileTap={{ scale: 0.97 }} onClick={handleConfirm}
-            disabled={!btnReady || loading}
+            disabled={loading}
             className="w-full py-4 rounded-xl font-bold text-base transition-all"
             style={{
-              background: btnReady ? `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%)` : theme.colors.card,
-              color: btnReady ? theme.colors.background : theme.colors.textSecondary,
-              boxShadow: btnReady ? `0 4px 20px rgba(242,194,48,0.3)` : 'none',
-              border: `1px solid ${btnReady ? 'transparent' : theme.colors.cardBorder}`,
+              background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%)`,
+              color: theme.colors.background,
+              boxShadow: `0 4px 20px rgba(242,194,48,0.3)`,
               opacity: loading ? 0.7 : 1,
             }}>
             {loading

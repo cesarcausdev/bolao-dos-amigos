@@ -182,8 +182,11 @@ public class BolaoService : IBolaoService
         var user = await _users.GetByIdAsync(requestingUserId)
             ?? throw AppException.NotFound("Usuário");
 
-        if (bolao.CreatedById != requestingUserId && !user.IsAdmin)
-            throw AppException.Forbidden("Apenas o criador ou admin pode definir o resultado.");
+        var isCreator   = bolao.CreatedById == requestingUserId;
+        var isOrganizer = bolao.OrganizerId == requestingUserId;
+
+        if (!isCreator && !isOrganizer && !user.IsAdmin)
+            throw AppException.Forbidden("Apenas o criador, organizador ou admin pode definir o resultado.");
 
         bolao.HomeScore = dto.HomeScore;
         bolao.AwayScore = dto.AwayScore;
