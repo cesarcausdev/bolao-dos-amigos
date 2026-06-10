@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Users, User, Pencil, Trophy } from 'lucide-react';
+import { ArrowLeft, Users, User, Pencil, Trophy, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { api } from '../services/api';
 import { theme } from '../theme';
@@ -20,6 +20,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [copiedPix, setCopiedPix] = useState(false);
   const [showResultSheet, setShowResultSheet] = useState(false);
   const [homeScoreInput, setHomeScoreInput] = useState('');
   const [awayScoreInput, setAwayScoreInput] = useState('');
@@ -164,7 +165,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
               style={{ background: 'rgba(242,194,48,0.12)', border: `1px solid rgba(242,194,48,0.25)` }}>
               <span className="text-xs font-bold" style={{ color: theme.colors.primary }}>
-                R$ {bolao.valorBolao.toFixed(2)}/palpite
+                R$ {bolao.valorBolao.toFixed(2)}
               </span>
               <span className="text-xs" style={{ color: 'rgba(242,194,48,0.5)' }}>·</span>
               <span className="text-xs font-bold" style={{ color: theme.colors.primary }}>
@@ -197,13 +198,27 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
               style={{ background: 'rgba(242,194,48,0.06)', border: `1px solid rgba(242,194,48,0.2)` }}>
               <span className="text-xl flex-shrink-0">💸</span>
-              <div className="min-w-0">
+              <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold" style={{ color: theme.colors.primary }}>
                   Pagamento — R$ {bolao.valorBolao.toFixed(2)}
                 </p>
-                <p className="text-xs truncate mt-0.5" style={{ color: theme.colors.textSecondary }}>
-                  Pix: {bolao.pixKey}
-                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <p className="text-xs truncate" style={{ color: theme.colors.textSecondary }}>
+                    Pix: {bolao.pixKey}
+                  </p>
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(bolao.pixKey!);
+                      setCopiedPix(true);
+                      setTimeout(() => setCopiedPix(false), 2000);
+                    }}
+                    className="flex-shrink-0 p-1 rounded-lg transition-all active:scale-90"
+                    style={{ color: copiedPix ? theme.colors.success : theme.colors.textSecondary }}
+                  >
+                    {copiedPix ? <Check size={13} /> : <Copy size={13} />}
+                  </button>
+                </div>
               </div>
             </div>
           )}

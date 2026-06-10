@@ -58,18 +58,12 @@ export function BolaoCard({ bolao, onNavigate, index = 0 }: BolaoCardProps) {
         <ChevronRight size={16} style={{ color: theme.colors.textSecondary }} className="ml-3 flex-shrink-0" />
       </div>
 
-      {/* Info row */}
+      {/* Info strip — date + status only */}
       <div className="rounded-xl px-3 py-2 flex items-center justify-between"
         style={{ background: theme.colors.secondaryDark }}>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
-            <Clock size={11} style={{ color: theme.colors.textSecondary }} />
-            <span className="text-xs" style={{ color: theme.colors.textSecondary }}>{bolao.date}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Users size={11} style={{ color: theme.colors.textSecondary }} />
-            <span className="text-xs" style={{ color: theme.colors.textSecondary }}>{bolao.participants} participantes</span>
-          </div>
+        <div className="flex items-center gap-1">
+          <Clock size={11} style={{ color: theme.colors.textSecondary }} />
+          <span className="text-xs" style={{ color: theme.colors.textSecondary }}>{bolao.date}</span>
         </div>
         <div className="flex items-center gap-1.5 px-2 py-1 rounded-full" style={{ background: status.bg }}>
           <span className="w-1.5 h-1.5 rounded-full" style={{ background: status.color }} />
@@ -77,15 +71,16 @@ export function BolaoCard({ bolao, onNavigate, index = 0 }: BolaoCardProps) {
         </div>
       </div>
 
+      {/* Bottom row — participants + valor */}
       <div className="mt-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1 min-w-0">
-          <span className="text-xs flex-shrink-0" style={{ color: '#4B6B55' }}>Org:</span>
-          <span className="text-xs font-medium truncate" style={{ color: theme.colors.textSecondary }}>{bolao.organizer}</span>
+        <div className="flex items-center gap-1">
+          <Users size={11} style={{ color: theme.colors.textSecondary }} />
+          <span className="text-xs" style={{ color: theme.colors.textSecondary }}>{bolao.participants} participantes</span>
         </div>
         {bolao.valorBolao > 0 && (
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs font-semibold" style={{ color: theme.colors.primary }}>
-              R$ {bolao.valorBolao.toFixed(2)}/palpite
+              R$ {bolao.valorBolao.toFixed(2)}
             </span>
             {bolao.paidCount > 0 && (
               <>
