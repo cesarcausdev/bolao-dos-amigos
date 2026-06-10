@@ -56,42 +56,42 @@ export function Palpite({ bolao, myPrediction, onBack, onNavigate }: PalpiteProp
       </div>
 
       <div className="flex-1 px-5 flex flex-col">
-        <div className="rounded-2xl p-6 mb-6" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.cardBorder}` }}>
-          <div className="flex items-center justify-between gap-4">
+        <div className="rounded-2xl px-4 py-5 mb-6 overflow-hidden" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.cardBorder}` }}>
+          <div className="flex items-center justify-between gap-2">
             {/* Home */}
-            <div className="flex flex-col items-center gap-2 flex-1">
+            <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
               <span className="text-5xl">{bolao.homeTeam.flag}</span>
-              <p className="text-sm font-bold text-center" style={{ color: theme.colors.text }}>{bolao.homeTeam.name}</p>
-              <div className="flex items-center gap-3 mt-2">
+              <p className="text-sm font-bold text-center leading-tight" style={{ color: theme.colors.text }}>{bolao.homeTeam.name}</p>
+              <div className="flex items-center gap-2 mt-2">
                 <button onClick={() => adjust(v => setHomeGoals(v), homeGoals, -1)}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
                   style={{ background: 'rgba(255,255,255,0.07)', color: theme.colors.text }}>−</button>
                 <div className="w-12 h-14 rounded-xl flex items-center justify-center text-3xl font-black"
                   style={{ background: theme.colors.secondaryDark, color: theme.colors.primary }}>
                   {homeGoals}
                 </div>
                 <button onClick={() => adjust(v => setHomeGoals(v), homeGoals, 1)}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
                   style={{ background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%)`, color: theme.colors.background }}>+</button>
               </div>
             </div>
 
-            <span className="text-2xl font-black" style={{ color: theme.colors.border }}>×</span>
+            <span className="text-2xl font-black flex-shrink-0" style={{ color: theme.colors.border }}>×</span>
 
             {/* Away */}
-            <div className="flex flex-col items-center gap-2 flex-1">
+            <div className="flex flex-col items-center gap-2 flex-1 min-w-0">
               <span className="text-5xl">{bolao.awayTeam.flag}</span>
-              <p className="text-sm font-bold text-center" style={{ color: theme.colors.text }}>{bolao.awayTeam.name}</p>
-              <div className="flex items-center gap-3 mt-2">
+              <p className="text-sm font-bold text-center leading-tight" style={{ color: theme.colors.text }}>{bolao.awayTeam.name}</p>
+              <div className="flex items-center gap-2 mt-2">
                 <button onClick={() => adjust(v => setAwayGoals(v), awayGoals, -1)}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
                   style={{ background: 'rgba(255,255,255,0.07)', color: theme.colors.text }}>−</button>
                 <div className="w-12 h-14 rounded-xl flex items-center justify-center text-3xl font-black"
                   style={{ background: theme.colors.secondaryDark, color: theme.colors.primary }}>
                   {awayGoals}
                 </div>
                 <button onClick={() => adjust(v => setAwayGoals(v), awayGoals, 1)}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-xl font-bold transition-all active:scale-95"
                   style={{ background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%)`, color: theme.colors.background }}>+</button>
               </div>
             </div>
