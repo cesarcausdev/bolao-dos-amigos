@@ -22,6 +22,12 @@ public class UserService : IUserService
         return new UserDto(user.Id, user.Name, user.Username, user.Avatar, user.TotalPoints, user.BestRank, count);
     }
 
+    public async Task<List<UserSummaryDto>> GetAllAsync()
+    {
+        var users = await _users.GetAllAsync();
+        return users.Select(u => new UserSummaryDto(u.Id, u.Name, u.Username, u.Avatar)).ToList();
+    }
+
     public async Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileDto dto)
     {
         var user = await _users.GetByIdAsync(userId)

@@ -17,6 +17,9 @@ public record BolaoDto(
     int? HomeScore,
     int? AwayScore,
     string CreatedBy,
+    Guid? OrganizerId,
+    string? OrganizerName,
+    decimal ValorBolao,
     int ParticipantCount
 );
 
@@ -29,6 +32,9 @@ public record BolaoDetailDto(
     int? HomeScore,
     int? AwayScore,
     string CreatedBy,
+    Guid? OrganizerId,
+    string? OrganizerName,
+    decimal ValorBolao,
     List<ParticipantDto> Participants
 );
 
@@ -48,7 +54,21 @@ public record CreateBolaoDto(
     string AwayTeamId,
     string AwayTeamName,
     string AwayTeamFlag,
-    DateTime MatchDate
+    DateTime MatchDate,
+    Guid? OrganizerId,
+    decimal ValorBolao
+);
+
+public record UpdateBolaoDto(
+    string HomeTeamId,
+    string HomeTeamName,
+    string HomeTeamFlag,
+    string AwayTeamId,
+    string AwayTeamName,
+    string AwayTeamFlag,
+    DateTime MatchDate,
+    Guid? OrganizerId,
+    decimal ValorBolao
 );
 
 public record SetResultadoDto(

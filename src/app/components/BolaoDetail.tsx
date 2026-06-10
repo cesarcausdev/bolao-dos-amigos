@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Users, User } from 'lucide-react';
+import { ArrowLeft, Users, User, Pencil } from 'lucide-react';
 import { motion } from 'motion/react';
 import { api } from '../services/api';
 import { theme } from '../theme';
@@ -20,6 +20,11 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const canEdit = currentUserId && (
+    bolao.organizerId === currentUserId ||
+    bolao.organizer === currentUserId  // fallback: antes de ter organizerId populado
+  );
+
   useEffect(() => {
     api.boloes.getDetail(initialBolao.id)
       .then(({ bolao: b, participants: p }) => { setBolao(b); setParticipants(p); })
@@ -31,10 +36,23 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
     <div className="flex flex-col min-h-screen pb-24">
       {/* Header */}
       <div className="px-5 pt-10 pb-6">
-        <button onClick={onBack} className="flex items-center gap-2 mb-6" style={{ color: theme.colors.textSecondary }}>
-          <ArrowLeft size={20} />
-          <span className="text-sm">Voltar</span>
-        </button>
+        <div className="flex items-center justify-between mb-6">
+          <button onClick={onBack} className="flex items-center gap-2" style={{ color: theme.colors.textSecondary }}>
+            <ArrowLeft size={20} />
+            <span className="text-sm">Voltar</span>
+          </button>
+          {canEdit && (
+            <motion.button
+              whileTap={{ scale: 0.93 }}
+              onClick={() => onNavigate('editar-bolao', bolao)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+              style={{ background: theme.colors.card, border: `1px solid ${theme.colors.cardBorder}`, color: theme.colors.primary }}
+            >
+              <Pencil size={12} />
+              Editar
+            </motion.button>
+          )}
+        </div>
 
         <div className="flex items-center justify-center gap-6">
           <div className="flex flex-col items-center gap-2">
@@ -64,7 +82,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-4 mt-4">
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
           <div className="flex items-center gap-1.5">
             <User size={12} style={{ color: theme.colors.textSecondary }} />
             <span className="text-xs" style={{ color: theme.colors.textSecondary }}>Org: {bolao.organizer}</span>
@@ -73,6 +91,14 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
             <Users size={12} style={{ color: theme.colors.textSecondary }} />
             <span className="text-xs" style={{ color: theme.colors.textSecondary }}>{bolao.participants} participantes</span>
           </div>
+          {bolao.valorBolao > 0 && (
+            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full"
+              style={{ background: 'rgba(242,194,48,0.12)', border: `1px solid rgba(242,194,48,0.25)` }}>
+              <span className="text-xs font-bold" style={{ color: theme.colors.primary }}>
+                R$ {bolao.valorBolao.toFixed(2)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

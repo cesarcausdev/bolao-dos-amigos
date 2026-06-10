@@ -1,5 +1,5 @@
 import { getToken } from '../lib/auth';
-import type { Bolao, Participant, User } from '../components/types';
+import type { Bolao, Participant, User, UserSummary } from '../components/types';
 
 // ── Raw API types (match .NET DTOs) ──────────────────────────────────────────
 
@@ -7,12 +7,14 @@ interface ApiUser {
   id: string; name: string; username: string;
   avatar: string | null; totalPoints: number; bestRank: number; boloesCount: number;
 }
+interface ApiUserSummary { id: string; name: string; username: string; avatar: string | null; }
 interface ApiAuthResult { token: string; user: ApiUser; }
 interface ApiTeam { id: string; name: string; flag: string; }
 interface ApiBolao {
   id: string; homeTeam: ApiTeam; awayTeam: ApiTeam; matchDate: string;
   status: string; homeScore: number | null; awayScore: number | null;
-  createdBy: string; participantCount: number;
+  createdBy: string; organizerId: string | null; organizerName: string | null;
+  valorBolao: number; participantCount: number;
 }
 interface ApiParticipant {
   userId: string; name: string; avatar: string | null;
@@ -78,7 +80,10 @@ function mapBolao(b: ApiBolao): Bolao {
     homeTeam: { name: b.homeTeam.name, shortName: b.homeTeam.id.slice(0, 3).toUpperCase(), flag: b.homeTeam.flag },
     awayTeam: { name: b.awayTeam.name, shortName: b.awayTeam.id.slice(0, 3).toUpperCase(), flag: b.awayTeam.flag },
     date: fmtDate(b.matchDate), time: fmtTime(b.matchDate),
-    participants: b.participantCount, organizer: b.createdBy,
+    participants: b.participantCount,
+    organizer: b.organizerName ?? b.createdBy,
+    organizerId: b.organizerId ?? undefined,
+    valorBolao: b.valorBolao ?? 0,
     status: fmtStatus(b.status),
     homeScore: b.homeScore ?? undefined,
     awayScore: b.awayScore ?? undefined,
@@ -125,7 +130,10 @@ export const api = {
         homeTeam: { name: r.homeTeam.name, shortName: r.homeTeam.id.slice(0, 3).toUpperCase(), flag: r.homeTeam.flag },
         awayTeam: { name: r.awayTeam.name, shortName: r.awayTeam.id.slice(0, 3).toUpperCase(), flag: r.awayTeam.flag },
         date: fmtDate(r.matchDate), time: fmtTime(r.matchDate),
-        participants: r.participants.length, organizer: r.createdBy,
+        participants: r.participants.length,
+        organizer: r.organizerName ?? r.createdBy,
+        organizerId: r.organizerId ?? undefined,
+        valorBolao: r.valorBolao ?? 0,
         status: fmtStatus(r.status),
         homeScore: r.homeScore ?? undefined,
         awayScore: r.awayScore ?? undefined,
@@ -135,8 +143,13 @@ export const api = {
     create: (dto: {
       homeTeamId: string; homeTeamName: string; homeTeamFlag: string;
       awayTeamId: string; awayTeamName: string; awayTeamFlag: string;
-      matchDate: string;
+      matchDate: string; organizerId?: string | null; valorBolao: number;
     }) => request<ApiBolao>('/boloes', { method: 'POST', body: JSON.stringify(dto) }),
+    update: (id: string, dto: {
+      homeTeamId: string; homeTeamName: string; homeTeamFlag: string;
+      awayTeamId: string; awayTeamName: string; awayTeamFlag: string;
+      matchDate: string; organizerId?: string | null; valorBolao: number;
+    }) => request<ApiBolao>(`/boloes/${id}`, { method: 'PUT', body: JSON.stringify(dto) }),
     join: (id: string) => request<null>(`/boloes/${id}/join`, { method: 'POST' }),
     submitPalpite: (bolaoId: string, placarHome: number, placarAway: number) =>
       request(`/boloes/${bolaoId}/palpites`, {
@@ -167,5 +180,15 @@ export const api = {
     get: async (): Promise<User> => mapUser(await request<ApiUser>('/profile')),
     update: async (data: { name?: string; avatar?: string }): Promise<User> =>
       mapUser(await request<ApiUser>('/profile', { method: 'PUT', body: JSON.stringify(data) })),
+  },
+
+  users: {
+    getAll: async (): Promise<UserSummary[]> => {
+      const r = await request<ApiUserSummary[]>('/users');
+      return r.map(u => ({
+        id: u.id, name: u.name, username: u.username,
+        avatar: avatarFallback(u.avatar, u.id),
+      }));
+    },
   },
 };

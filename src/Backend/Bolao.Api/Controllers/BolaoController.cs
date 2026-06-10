@@ -39,6 +39,14 @@ public class BolaoController : ControllerBase
         return CreatedAtAction(nameof(GetDetail), new { id = result.Id }, result);
     }
 
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBolaoDto dto)
+    {
+        var userId = GetUserId() ?? throw new UnauthorizedAccessException();
+        var result = await _boloes.UpdateAsync(id, dto, userId);
+        return Ok(result);
+    }
+
     [HttpPost("{id:guid}/join")]
     public async Task<IActionResult> Join(Guid id)
     {

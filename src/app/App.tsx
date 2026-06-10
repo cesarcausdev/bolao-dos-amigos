@@ -16,7 +16,7 @@ import { loadAuth, saveAuth, clearAuth } from './lib/auth';
 import type { Screen, Bolao, User } from './components/types';
 
 const AUTH_SCREENS: Screen[] = ['login', 'register'];
-const screensWithNav: Screen[] = ['home', 'boloes', 'classificacao', 'bolao-detail', 'palpite', 'bolao-ranking', 'palpites-list', 'profile', 'criar-bolao'];
+const screensWithNav: Screen[] = ['home', 'boloes', 'classificacao', 'bolao-detail', 'palpite', 'bolao-ranking', 'palpites-list', 'profile', 'criar-bolao', 'editar-bolao'];
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('login');
@@ -86,6 +86,8 @@ export default function App() {
         return <Profile onLogout={handleLogout} onNavigate={navigate} currentUser={currentUser} />;
       case 'criar-bolao':
         return <CriarBolao onBack={goBack} onNavigate={navigate} />;
+      case 'editar-bolao':
+        return <CriarBolao onBack={goBack} onNavigate={navigate} editando={screenData as Bolao} />;
       default:
         return <Home onNavigate={navigate} currentUser={currentUser} />;
     }

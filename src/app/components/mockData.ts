@@ -3,7 +3,7 @@ import type { Bolao, Participant, User } from './types';
 export const currentUser: User = {
   id: '1',
   name: 'César',
-  email: 'cesar@bolao.app',
+  username: 'cesar',
   avatar: 'https://i.pravatar.cc/150?img=7',
   points: 147,
   bestRank: 2,
@@ -19,6 +19,7 @@ export const boloes: Bolao[] = [
     time: '16:00',
     participants: 12,
     organizer: 'César',
+    valorBolao: 0,
     status: 'Aberto',
   },
   {
@@ -29,6 +30,7 @@ export const boloes: Bolao[] = [
     time: '18:00',
     participants: 8,
     organizer: 'João',
+    valorBolao: 50,
     status: 'Aberto',
   },
   {
@@ -39,6 +41,7 @@ export const boloes: Bolao[] = [
     time: '12:00',
     participants: 15,
     organizer: 'Pedro',
+    valorBolao: 100,
     status: 'Encerrado',
     homeScore: 2,
     awayScore: 1,
@@ -51,6 +54,7 @@ export const boloes: Bolao[] = [
     time: '20:00',
     participants: 6,
     organizer: 'Lucas',
+    valorBolao: 0,
     status: 'Aberto',
   },
   {
@@ -61,6 +65,7 @@ export const boloes: Bolao[] = [
     time: '15:00',
     participants: 10,
     organizer: 'Ana',
+    valorBolao: 30,
     status: 'Em Andamento',
     homeScore: 1,
     awayScore: 1,

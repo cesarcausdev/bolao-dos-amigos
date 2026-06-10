@@ -33,6 +33,12 @@ public class AppDbContext : DbContext
              .WithMany()
              .HasForeignKey(x => x.CreatedById)
              .OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.Organizer)
+             .WithMany()
+             .HasForeignKey(x => x.OrganizerId)
+             .OnDelete(DeleteBehavior.SetNull)
+             .IsRequired(false);
+            e.Property(x => x.ValorBolao).HasColumnType("numeric(10,2)").HasDefaultValue(0m);
             e.HasQueryFilter(x => !x.IsDeleted);
         });
 

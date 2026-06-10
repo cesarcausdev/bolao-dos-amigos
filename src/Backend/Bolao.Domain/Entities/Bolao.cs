@@ -23,6 +23,11 @@ public class Bolao
     public Guid CreatedById { get; set; }
     public User CreatedBy { get; set; } = null!;
 
+    public Guid? OrganizerId { get; set; }
+    public User? Organizer { get; set; }
+
+    public decimal ValorBolao { get; set; }
+
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

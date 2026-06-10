@@ -15,18 +15,24 @@ public class BolaoRepository : IBolaoRepository
     public Task<Bolao.Domain.Entities.Bolao?> GetByIdAsync(Guid id) =>
         _db.Boloes
            .Include(b => b.CreatedBy)
+           .Include(b => b.Organizer)
            .FirstOrDefaultAsync(b => b.Id == id);
 
     public Task<Bolao.Domain.Entities.Bolao?> GetByIdWithDetailsAsync(Guid id) =>
         _db.Boloes
            .Include(b => b.CreatedBy)
+           .Include(b => b.Organizer)
            .Include(b => b.Participants).ThenInclude(p => p.User)
            .Include(b => b.Palpites).ThenInclude(p => p.User)
            .FirstOrDefaultAsync(b => b.Id == id);
 
     public Task<List<Bolao.Domain.Entities.Bolao>> GetAllAsync(BolaoStatus? status = null)
     {
-        var query = _db.Boloes.Include(b => b.CreatedBy).Include(b => b.Participants).AsQueryable();
+        var query = _db.Boloes
+            .Include(b => b.CreatedBy)
+            .Include(b => b.Organizer)
+            .Include(b => b.Participants)
+            .AsQueryable();
         if (status.HasValue)
             query = query.Where(b => b.Status == status.Value);
         return query.OrderByDescending(b => b.MatchDate).ToListAsync();

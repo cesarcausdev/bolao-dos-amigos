@@ -9,7 +9,8 @@ export type Screen =
   | 'bolao-ranking'
   | 'palpites-list'
   | 'profile'
-  | 'criar-bolao';
+  | 'criar-bolao'
+  | 'editar-bolao';
 
 export interface User {
   id: string;
@@ -19,6 +20,13 @@ export interface User {
   points: number;
   bestRank: number;
   boloesCount: number;
+}
+
+export interface UserSummary {
+  id: string;
+  name: string;
+  username: string;
+  avatar: string;
 }
 
 export interface Team {
@@ -35,6 +43,8 @@ export interface Bolao {
   time: string;
   participants: number;
   organizer: string;
+  organizerId?: string;
+  valorBolao: number;
   status: 'Aberto' | 'Encerrado' | 'Em Andamento';
   homeScore?: number;
   awayScore?: number;

@@ -57,6 +57,9 @@ public class BolaoService : IBolaoService
             bolao.HomeScore,
             bolao.AwayScore,
             bolao.CreatedBy.Name,
+            bolao.OrganizerId,
+            bolao.Organizer?.Name,
+            bolao.ValorBolao,
             participants
         );
     }
@@ -78,6 +81,8 @@ public class BolaoService : IBolaoService
             MatchDate = dto.MatchDate.ToUniversalTime(),
             Status = BolaoStatus.Aberto,
             CreatedById = createdById,
+            OrganizerId = dto.OrganizerId,
+            ValorBolao = dto.ValorBolao,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -94,6 +99,42 @@ public class BolaoService : IBolaoService
         });
 
         bolao.CreatedBy = creator;
+        if (dto.OrganizerId.HasValue)
+            bolao.Organizer = await _users.GetByIdAsync(dto.OrganizerId.Value);
+
+        return MapToDto(bolao);
+    }
+
+    public async Task<BolaoDto> UpdateAsync(Guid bolaoId, UpdateBolaoDto dto, Guid requestingUserId)
+    {
+        var bolao = await _boloes.GetByIdAsync(bolaoId)
+            ?? throw AppException.NotFound("Bolão");
+
+        var user = await _users.GetByIdAsync(requestingUserId)
+            ?? throw AppException.NotFound("Usuário");
+
+        var isCreator   = bolao.CreatedById == requestingUserId;
+        var isOrganizer = bolao.OrganizerId == requestingUserId;
+
+        if (!isCreator && !isOrganizer && !user.IsAdmin)
+            throw AppException.Forbidden("Apenas o criador, organizador ou admin pode editar este bolão.");
+
+        bolao.HomeTeamId   = dto.HomeTeamId;
+        bolao.HomeTeamName = dto.HomeTeamName;
+        bolao.HomeTeamFlag = dto.HomeTeamFlag;
+        bolao.AwayTeamId   = dto.AwayTeamId;
+        bolao.AwayTeamName = dto.AwayTeamName;
+        bolao.AwayTeamFlag = dto.AwayTeamFlag;
+        bolao.MatchDate    = dto.MatchDate.ToUniversalTime();
+        bolao.OrganizerId  = dto.OrganizerId;
+        bolao.ValorBolao   = dto.ValorBolao;
+        bolao.UpdatedAt    = DateTime.UtcNow;
+
+        await _boloes.UpdateAsync(bolao);
+
+        if (dto.OrganizerId.HasValue)
+            bolao.Organizer = await _users.GetByIdAsync(dto.OrganizerId.Value);
+
         return MapToDto(bolao);
     }
 
@@ -162,6 +203,9 @@ public class BolaoService : IBolaoService
         b.HomeScore,
         b.AwayScore,
         b.CreatedBy?.Name ?? string.Empty,
+        b.OrganizerId,
+        b.Organizer?.Name,
+        b.ValorBolao,
         b.Participants?.Count ?? 0
     );
 }
