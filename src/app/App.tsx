@@ -65,7 +65,10 @@ export default function App() {
   };
 
   const handleAvatarDone = (updatedUser?: User) => {
-    if (updatedUser) setCurrentUser(updatedUser);
+    if (updatedUser) {
+      updateStoredUser(updatedUser);
+      setCurrentUser(updatedUser);
+    }
     setHistory([]);
     setScreen('home');
     setScreenData(null);

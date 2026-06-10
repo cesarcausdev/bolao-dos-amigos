@@ -3,7 +3,6 @@ using Bolao.Application.DTOs;
 using Bolao.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 
 namespace Bolao.Api.Controllers;
 
@@ -38,8 +37,7 @@ public class ProfileController : ControllerBase
     }
 
     [HttpPost("avatar")]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UploadAvatar(IFormFile file)
+    public async Task<IActionResult> UploadAvatar([FromForm] IFormFile file)
     {
         var userId = GetUserId() ?? throw new UnauthorizedAccessException();
 
