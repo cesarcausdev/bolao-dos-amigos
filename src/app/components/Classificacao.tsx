@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { api } from '../services/api';
 import { theme } from '../theme';
-import type { Participant } from './types';
+import type { Bolao, Participant } from './types';
 
 interface ClassificacaoProps {
   participants?: Participant[];
   currentUserId?: string;
   embedded?: boolean;
+  bolao?: Bolao;
   valorBolao?: number;
   paidCount?: number;
 }
@@ -21,6 +22,7 @@ export function Classificacao({
   embedded = false,
   valorBolao = 0,
   paidCount = 0,
+  bolao,
 }: ClassificacaoProps) {
   const [participants, setParticipants] = useState<Participant[]>(propParticipants ?? []);
   const [loading, setLoading] = useState(!propParticipants && !embedded);
@@ -158,6 +160,11 @@ export function Classificacao({
                             <p className="text-xs mt-0.5" style={{ color: theme.colors.textSecondary }}>
                               {w.points} pts
                             </p>
+                            {w.prediction && bolao && (
+                              <p className="text-xs mt-0.5 font-semibold" style={{ color: 'rgba(242,194,48,0.8)' }}>
+                                {bolao.homeTeam.flag} {w.prediction.home} × {w.prediction.away} {bolao.awayTeam.flag}
+                              </p>
+                            )}
                           </div>
                         </div>
 
@@ -218,6 +225,11 @@ export function Classificacao({
                           <p className="text-sm font-semibold truncate" style={{ color: isCurrentUser ? theme.colors.primary : theme.colors.text }}>
                             {p.name}{isCurrentUser && ' (você)'}
                           </p>
+                          {p.prediction && bolao && (
+                            <p className="text-xs mt-0.5" style={{ color: theme.colors.textSecondary }}>
+                              {bolao.homeTeam.flag} {p.prediction.home} × {p.prediction.away} {bolao.awayTeam.flag}
+                            </p>
+                          )}
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-bold" style={{ color: isTop3 && !embedded ? medalColors[realRank - 1] : theme.colors.text }}>

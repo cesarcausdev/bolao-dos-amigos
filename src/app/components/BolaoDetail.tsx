@@ -253,6 +253,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
               participants={participants}
               currentUserId={currentUserId}
               embedded
+              bolao={bolao}
               valorBolao={bolao.valorBolao}
               paidCount={bolao.paidCount}
             />
