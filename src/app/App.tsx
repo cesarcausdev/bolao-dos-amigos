@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { theme } from './theme';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
+import { UploadAvatar } from './components/UploadAvatar';
 import { Home } from './components/Home';
 import { BoloesList } from './components/BoloesList';
 import { Classificacao } from './components/Classificacao';
@@ -54,6 +55,21 @@ export default function App() {
     navigate('home');
   };
 
+  const handleRegisterComplete = (user: User, token: string) => {
+    saveAuth(token, user);
+    setCurrentUser(user);
+    setHistory([]);
+    setScreen('upload-avatar');
+    setScreenData(null);
+  };
+
+  const handleAvatarDone = (updatedUser?: User) => {
+    if (updatedUser) setCurrentUser(updatedUser);
+    setHistory([]);
+    setScreen('home');
+    setScreenData(null);
+  };
+
   const handleLogout = () => {
     clearAuth();
     setCurrentUser(null);
@@ -69,7 +85,9 @@ export default function App() {
       case 'login':
         return <Login onNavigate={navigate} onLogin={handleLogin} />;
       case 'register':
-        return <Register onNavigate={navigate} onRegister={handleLogin} />;
+        return <Register onNavigate={navigate} onRegister={handleRegisterComplete} />;
+      case 'upload-avatar':
+        return <UploadAvatar currentUser={currentUser} onDone={handleAvatarDone} />;
       case 'home':
         return <Home onNavigate={navigate} currentUser={currentUser} />;
       case 'boloes':
@@ -98,7 +116,7 @@ export default function App() {
   const isAuthScreen = AUTH_SCREENS.includes(screen);
   const bgImage = isAuthScreen ? theme.backgrounds.login : theme.backgrounds.app;
   const overlay = screen === 'login' ? theme.overlays.login
-    : screen === 'register' ? theme.overlays.register
+    : screen === 'register' || screen === 'upload-avatar' ? theme.overlays.register
     : theme.overlays.app;
 
   return (

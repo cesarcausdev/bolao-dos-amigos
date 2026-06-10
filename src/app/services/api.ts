@@ -200,6 +200,19 @@ export const api = {
     get: async (): Promise<User> => mapUser(await request<ApiUser>('/profile')),
     update: async (data: { name?: string; avatar?: string }): Promise<User> =>
       mapUser(await request<ApiUser>('/profile', { method: 'PUT', body: JSON.stringify(data) })),
+    uploadAvatar: async (file: File): Promise<User> => {
+      const token = getToken();
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch('/api/profile/avatar', {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: form,
+      });
+      const body = await res.json().catch(() => ({ error: `Erro ${res.status}` }));
+      if (!res.ok) throw new Error(body.error || `Erro ${res.status}`);
+      return mapUser(body as ApiUser);
+    },
   },
 
   users: {

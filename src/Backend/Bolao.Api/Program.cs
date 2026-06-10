@@ -2,6 +2,7 @@ using Bolao.Api.Extensions;
 using Bolao.Infrastructure.Data;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -124,6 +125,18 @@ app.UseCors(app.Environment.IsDevelopment() ? "Dev" : "Production");
 app.UseRateLimiter();
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+// Serve uploaded files (profile avatars) from the configured volume path
+var uploadCfgPath = app.Configuration["UploadPath"] ?? "/app/uploads";
+var uploadAbsPath = Path.IsPathRooted(uploadCfgPath)
+    ? uploadCfgPath
+    : Path.Combine(Directory.GetCurrentDirectory(), uploadCfgPath);
+Directory.CreateDirectory(Path.Combine(uploadAbsPath, "avatars"));
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadAbsPath),
+    RequestPath = "/uploads",
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
