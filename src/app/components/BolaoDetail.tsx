@@ -24,9 +24,14 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
   const isAberto = bolao.status === 'Aberto' && !matchStarted;
 
   const canEdit = currentUserId && isAberto && (
-    bolao.organizerId === currentUserId ||
-    bolao.organizer === currentUserId
+    bolao.createdById === currentUserId ||
+    bolao.organizerId === currentUserId
   );
+
+  const canManagePayments = !!(currentUserId && (
+    bolao.createdById === currentUserId ||
+    bolao.organizerId === currentUserId
+  ));
 
   const myParticipant = currentUserId
     ? participants.find(p => p.id === currentUserId)
@@ -107,7 +112,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
               </span>
               <span className="text-xs" style={{ color: 'rgba(242,194,48,0.5)' }}>·</span>
               <span className="text-xs font-bold" style={{ color: theme.colors.primary }}>
-                🏆 R$ {(bolao.valorBolao * bolao.participants).toFixed(2)}
+                🏆 R$ {(bolao.valorBolao * bolao.paidCount).toFixed(2)}
               </span>
             </div>
           )}
@@ -176,7 +181,14 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
         ) : activeTab === 'classificacao' ? (
           <Classificacao participants={participants} currentUserId={currentUserId} embedded />
         ) : (
-          <PalpitesList bolao={bolao} participants={participants} embedded />
+          <PalpitesList
+            bolao={bolao}
+            participants={participants}
+            embedded
+            canManagePayments={canManagePayments}
+            bolaoId={bolao.id}
+            currentUserId={currentUserId}
+          />
         )}
       </div>
     </div>

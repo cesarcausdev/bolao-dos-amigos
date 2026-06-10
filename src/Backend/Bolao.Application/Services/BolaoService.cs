@@ -44,9 +44,12 @@ public class BolaoService : IBolaoService
                     p.User.Avatar,
                     palpite is not null ? new PalpiteResultDto(palpite.PlacarHome, palpite.PlacarAway) : null,
                     palpite?.Pontos ?? 0,
-                    idx + 1
+                    idx + 1,
+                    p.Pagou
                 );
             }).ToList();
+
+        var paidCount = bolao.Participants.Count(p => p.Pagou);
 
         return new BolaoDetailDto(
             bolao.Id,
@@ -56,11 +59,13 @@ public class BolaoService : IBolaoService
             bolao.Status,
             bolao.HomeScore,
             bolao.AwayScore,
+            bolao.CreatedById,
             bolao.CreatedBy.Name,
             bolao.OrganizerId,
             bolao.Organizer?.Name,
             bolao.ValorBolao,
             bolao.PixKey,
+            paidCount,
             participants
         );
     }
@@ -205,11 +210,34 @@ public class BolaoService : IBolaoService
         b.Status,
         b.HomeScore,
         b.AwayScore,
+        b.CreatedById,
         b.CreatedBy?.Name ?? string.Empty,
         b.OrganizerId,
         b.Organizer?.Name,
         b.ValorBolao,
         b.PixKey,
-        b.Participants?.Count ?? 0
+        b.Participants?.Count ?? 0,
+        b.Participants?.Count(p => p.Pagou) ?? 0
     );
+
+    public async Task UpdatePagamentoAsync(Guid bolaoId, Guid targetUserId, UpdatePagamentoDto dto, Guid requestingUserId)
+    {
+        var bolao = await _boloes.GetByIdAsync(bolaoId)
+            ?? throw AppException.NotFound("Bolão");
+
+        var requester = await _users.GetByIdAsync(requestingUserId)
+            ?? throw AppException.NotFound("Usuário");
+
+        var isCreator   = bolao.CreatedById == requestingUserId;
+        var isOrganizer = bolao.OrganizerId == requestingUserId;
+
+        if (!isCreator && !isOrganizer && !requester.IsAdmin)
+            throw AppException.Forbidden("Apenas o criador ou organizador pode gerenciar pagamentos.");
+
+        var participant = await _boloes.GetParticipantAsync(bolaoId, targetUserId)
+            ?? throw AppException.NotFound("Participante");
+
+        participant.Pagou = dto.Pagou;
+        await _boloes.UpdateParticipantAsync(participant);
+    }
 }

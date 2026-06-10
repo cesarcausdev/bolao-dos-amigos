@@ -64,6 +64,15 @@ public class BolaoRepository : IBolaoRepository
         await _db.SaveChangesAsync();
     }
 
+    public Task<BolaoParticipant?> GetParticipantAsync(Guid bolaoId, Guid userId) =>
+        _db.BolaoParticipants.FirstOrDefaultAsync(p => p.BolaoId == bolaoId && p.UserId == userId);
+
+    public async Task UpdateParticipantAsync(BolaoParticipant participant)
+    {
+        _db.BolaoParticipants.Update(participant);
+        await _db.SaveChangesAsync();
+    }
+
     public Task<List<BolaoParticipant>> GetParticipantsAsync(Guid bolaoId) =>
         _db.BolaoParticipants
            .Include(p => p.User)

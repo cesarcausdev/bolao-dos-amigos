@@ -43,8 +43,10 @@ export interface Bolao {
   time: string;
   matchDateIso: string;
   participants: number;
+  paidCount: number;
   organizer: string;
   organizerId?: string;
+  createdById: string;
   valorBolao: number;
   pixKey?: string;
   status: 'Aberto' | 'Encerrado' | 'Em Andamento';
@@ -57,5 +59,6 @@ export interface Participant {
   name: string;
   avatar: string;
   points: number;
+  pagou: boolean;
   prediction?: { home: number; away: number };
 }

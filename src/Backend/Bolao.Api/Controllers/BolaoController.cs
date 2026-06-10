@@ -47,6 +47,14 @@ public class BolaoController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPatch("{id:guid}/participantes/{userId:guid}/pagamento")]
+    public async Task<IActionResult> UpdatePagamento(Guid id, Guid userId, [FromBody] UpdatePagamentoDto dto)
+    {
+        var requestingUserId = GetUserId() ?? throw new UnauthorizedAccessException();
+        await _boloes.UpdatePagamentoAsync(id, userId, dto, requestingUserId);
+        return NoContent();
+    }
+
     [HttpPost("{id:guid}/join")]
     public async Task<IActionResult> Join(Guid id)
     {

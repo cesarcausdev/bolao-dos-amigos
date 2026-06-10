@@ -16,12 +16,14 @@ public record BolaoDto(
     BolaoStatus Status,
     int? HomeScore,
     int? AwayScore,
+    Guid CreatedById,
     string CreatedBy,
     Guid? OrganizerId,
     string? OrganizerName,
     decimal ValorBolao,
     string? PixKey,
-    int ParticipantCount
+    int ParticipantCount,
+    int PaidCount
 );
 
 public record BolaoDetailDto(
@@ -32,11 +34,13 @@ public record BolaoDetailDto(
     BolaoStatus Status,
     int? HomeScore,
     int? AwayScore,
+    Guid CreatedById,
     string CreatedBy,
     Guid? OrganizerId,
     string? OrganizerName,
     decimal ValorBolao,
     string? PixKey,
+    int PaidCount,
     List<ParticipantDto> Participants
 );
 
@@ -46,8 +50,11 @@ public record ParticipantDto(
     string? Avatar,
     PalpiteResultDto? Palpite,
     int Pontos,
-    int Rank
+    int Rank,
+    bool Pagou
 );
+
+public record UpdatePagamentoDto(bool Pagou);
 
 public record CreateBolaoDto(
     string HomeTeamId,

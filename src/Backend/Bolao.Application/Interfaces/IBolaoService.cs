@@ -9,6 +9,7 @@ public interface IBolaoService
     Task<BolaoDetailDto> GetDetailAsync(Guid id, Guid? requestingUserId = null);
     Task<BolaoDto> CreateAsync(CreateBolaoDto dto, Guid createdById);
     Task<BolaoDto> UpdateAsync(Guid bolaoId, UpdateBolaoDto dto, Guid requestingUserId);
+    Task UpdatePagamentoAsync(Guid bolaoId, Guid targetUserId, UpdatePagamentoDto dto, Guid requestingUserId);
     Task JoinAsync(Guid bolaoId, Guid userId);
     Task SetResultadoAsync(Guid bolaoId, SetResultadoDto dto, Guid requestingUserId);
     Task UpdateStatusAsync(Guid bolaoId, UpdateStatusDto dto, Guid requestingUserId);

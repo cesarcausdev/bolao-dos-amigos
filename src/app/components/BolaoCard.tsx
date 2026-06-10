@@ -87,11 +87,11 @@ export function BolaoCard({ bolao, onNavigate, index = 0 }: BolaoCardProps) {
             <span className="text-xs font-semibold" style={{ color: theme.colors.primary }}>
               R$ {bolao.valorBolao.toFixed(2)}/palpite
             </span>
-            {bolao.participants > 0 && (
+            {bolao.paidCount > 0 && (
               <>
                 <span className="text-xs" style={{ color: theme.colors.border }}>·</span>
                 <span className="text-xs font-bold" style={{ color: theme.colors.primary }}>
-                  🏆 R$ {(bolao.valorBolao * bolao.participants).toFixed(2)}
+                  🏆 R$ {(bolao.valorBolao * bolao.paidCount).toFixed(2)}
                 </span>
               </>
             )}

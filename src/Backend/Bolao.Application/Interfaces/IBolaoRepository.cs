@@ -14,5 +14,7 @@ public interface IBolaoRepository
     Task UpdateAsync(BolaoEntity bolao);
     Task<bool> IsParticipantAsync(Guid bolaoId, Guid userId);
     Task AddParticipantAsync(BolaoParticipant participant);
+    Task<BolaoParticipant?> GetParticipantAsync(Guid bolaoId, Guid userId);
+    Task UpdateParticipantAsync(BolaoParticipant participant);
     Task<List<BolaoParticipant>> GetParticipantsAsync(Guid bolaoId);
 }

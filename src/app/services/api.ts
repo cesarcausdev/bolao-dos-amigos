@@ -13,13 +13,15 @@ interface ApiTeam { id: string; name: string; flag: string; }
 interface ApiBolao {
   id: string; homeTeam: ApiTeam; awayTeam: ApiTeam; matchDate: string;
   status: string; homeScore: number | null; awayScore: number | null;
-  createdBy: string; organizerId: string | null; organizerName: string | null;
-  valorBolao: number; pixKey: string | null; participantCount: number;
+  createdById: string; createdBy: string;
+  organizerId: string | null; organizerName: string | null;
+  valorBolao: number; pixKey: string | null;
+  participantCount: number; paidCount: number;
 }
 interface ApiParticipant {
   userId: string; name: string; avatar: string | null;
   palpite: { placarHome: number; placarAway: number } | null;
-  pontos: number; rank: number;
+  pontos: number; rank: number; pagou: boolean;
 }
 interface ApiBolaoDetail extends Omit<ApiBolao, 'participantCount'> {
   participants: ApiParticipant[];
@@ -82,8 +84,10 @@ function mapBolao(b: ApiBolao): Bolao {
     date: fmtDate(b.matchDate), time: fmtTime(b.matchDate),
     matchDateIso: b.matchDate,
     participants: b.participantCount,
+    paidCount: b.paidCount ?? 0,
     organizer: b.organizerName ?? b.createdBy,
     organizerId: b.organizerId ?? undefined,
+    createdById: b.createdById,
     valorBolao: b.valorBolao ?? 0,
     pixKey: b.pixKey ?? undefined,
     status: fmtStatus(b.status),
@@ -97,6 +101,7 @@ function mapParticipant(p: ApiParticipant): Participant {
     id: p.userId, name: p.name,
     avatar: avatarFallback(p.avatar, p.userId),
     points: p.pontos,
+    pagou: p.pagou,
     prediction: p.palpite ? { home: p.palpite.placarHome, away: p.palpite.placarAway } : undefined,
   };
 }
@@ -134,8 +139,10 @@ export const api = {
         date: fmtDate(r.matchDate), time: fmtTime(r.matchDate),
         matchDateIso: r.matchDate,
         participants: r.participants.length,
+        paidCount: r.paidCount ?? 0,
         organizer: r.organizerName ?? r.createdBy,
         organizerId: r.organizerId ?? undefined,
+        createdById: r.createdById,
         valorBolao: r.valorBolao ?? 0,
         pixKey: r.pixKey ?? undefined,
         status: fmtStatus(r.status),
@@ -163,6 +170,10 @@ export const api = {
       request(`/boloes/${bolaoId}/palpites`, {
         method: 'PUT', body: JSON.stringify({ placarHome, placarAway }),
       }),
+    updatePagamento: (bolaoId: string, userId: string, pagou: boolean) =>
+      request<null>(`/boloes/${bolaoId}/participantes/${userId}/pagamento`, {
+        method: 'PATCH', body: JSON.stringify({ pagou }),
+      }),
   },
 
   ranking: {
@@ -172,6 +183,7 @@ export const api = {
         id: e.userId, name: e.name,
         avatar: avatarFallback(e.avatar, e.userId),
         points: e.totalPoints,
+        pagou: false,
       }));
     },
     getBolao: async (bolaoId: string): Promise<Participant[]> => {

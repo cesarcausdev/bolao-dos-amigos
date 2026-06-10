@@ -11,4 +11,5 @@ public class BolaoParticipant
     public User User { get; set; } = null!;
 
     public DateTime JoinedAt { get; set; }
+    public bool Pagou { get; set; }
 }
