@@ -8,7 +8,8 @@ export type Screen =
   | 'palpite'
   | 'bolao-ranking'
   | 'palpites-list'
-  | 'profile';
+  | 'profile'
+  | 'criar-bolao';
 
 export interface User {
   id: string;

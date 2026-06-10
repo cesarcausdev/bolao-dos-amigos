@@ -42,7 +42,11 @@ export function BoloesList({ boloes: propBoloes, onNavigate, embedded = false }:
         <div className="px-5 pt-12 pb-4">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-2xl font-black" style={{ color: theme.colors.text }}>Bolões</h1>
-            <button className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%)` }}>
+            <button
+              onClick={() => onNavigate('criar-bolao')}
+              className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%)` }}
+            >
               <Plus size={18} style={{ color: theme.colors.background }} strokeWidth={2.5} />
             </button>
           </div>

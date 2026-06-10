@@ -10,12 +10,13 @@ import { BolaoDetail } from './components/BolaoDetail';
 import { Palpite } from './components/Palpite';
 import { PalpitesList } from './components/PalpitesList';
 import { Profile } from './components/Profile';
+import { CriarBolao } from './components/CriarBolao';
 import { BottomNav } from './components/BottomNav';
 import { loadAuth, saveAuth, clearAuth } from './lib/auth';
 import type { Screen, Bolao, User } from './components/types';
 
 const AUTH_SCREENS: Screen[] = ['login', 'register'];
-const screensWithNav: Screen[] = ['home', 'boloes', 'classificacao', 'bolao-detail', 'palpite', 'bolao-ranking', 'palpites-list', 'profile'];
+const screensWithNav: Screen[] = ['home', 'boloes', 'classificacao', 'bolao-detail', 'palpite', 'bolao-ranking', 'palpites-list', 'profile', 'criar-bolao'];
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('login');
@@ -83,6 +84,8 @@ export default function App() {
         return <PalpitesList />;
       case 'profile':
         return <Profile onLogout={handleLogout} onNavigate={navigate} currentUser={currentUser} />;
+      case 'criar-bolao':
+        return <CriarBolao onBack={goBack} onNavigate={navigate} />;
       default:
         return <Home onNavigate={navigate} currentUser={currentUser} />;
     }

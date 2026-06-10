@@ -132,6 +132,11 @@ export const api = {
       };
       return { bolao, participants: r.participants.map(mapParticipant) };
     },
+    create: (dto: {
+      homeTeamId: string; homeTeamName: string; homeTeamFlag: string;
+      awayTeamId: string; awayTeamName: string; awayTeamFlag: string;
+      matchDate: string;
+    }) => request<ApiBolao>('/boloes', { method: 'POST', body: JSON.stringify(dto) }),
     join: (id: string) => request<null>(`/boloes/${id}/join`, { method: 'POST' }),
     submitPalpite: (bolaoId: string, placarHome: number, placarAway: number) =>
       request(`/boloes/${bolaoId}/palpites`, {
