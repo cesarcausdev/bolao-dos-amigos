@@ -26,8 +26,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
   const [submittingResult, setSubmittingResult] = useState(false);
   const [resultError, setResultError] = useState('');
 
-  const matchStarted = new Date(bolao.matchDateIso) <= new Date();
-  const isAberto = bolao.status === 'Aberto' && !matchStarted;
+  const isAberto = bolao.status === 'Aberto';
   const isEncerrado = bolao.status === 'Encerrado';
   const isEmAndamento = bolao.status === 'Em Andamento';
 
@@ -287,8 +286,8 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl px-5 pt-5 pb-10"
-              style={{ background: theme.colors.secondary, border: `1px solid ${theme.colors.cardBorder}`, maxWidth: 430, margin: '0 auto' }}
+              className="fixed bottom-0 left-1/2 z-50 w-full rounded-t-3xl px-5 pt-5 pb-10"
+              style={{ transform: 'translateX(-50%)', maxWidth: 430, background: theme.colors.secondary, border: `1px solid ${theme.colors.cardBorder}` }}
             >
               {/* Handle */}
               <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: theme.colors.border }} />

@@ -543,8 +543,8 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
         {success && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5"
-            style={{ background: 'rgba(7,21,13,0.96)' }}>
+            className="fixed top-0 bottom-0 left-1/2 z-50 w-full flex flex-col items-center justify-center gap-5"
+            style={{ transform: 'translateX(-50%)', maxWidth: 430, background: 'rgba(7,21,13,0.96)' }}>
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
               <CheckCircle size={80} style={{ color: theme.colors.primary }} />
