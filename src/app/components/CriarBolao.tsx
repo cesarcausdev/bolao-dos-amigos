@@ -461,12 +461,12 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40"
+              className="fixed inset-0 z-[55]"
               style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
               onClick={() => { setPicker(null); setSearch(''); }}
             />
 
-            <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
+            <div className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center">
             <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 320 }}
@@ -510,7 +510,7 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-5 pb-8">
+              <div className="flex-1 overflow-y-auto px-5 pb-28">
                 {picker === 'organizer' ? (
                   <UserList
                     users={filteredUsers}

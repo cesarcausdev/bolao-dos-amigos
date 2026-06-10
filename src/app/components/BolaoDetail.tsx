@@ -311,16 +311,17 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowResultSheet(false)}
-              className="fixed inset-0 z-40"
+              className="fixed inset-0 z-[55]"
               style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
             />
+            <div className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center">
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-              className="fixed bottom-0 left-1/2 z-50 w-full rounded-t-3xl px-5 pt-5 pb-10"
-              style={{ transform: 'translateX(-50%)', maxWidth: 430, background: theme.colors.secondary, border: `1px solid ${theme.colors.cardBorder}` }}
+              className="w-full rounded-t-3xl px-5 pt-5 pb-28"
+              style={{ maxWidth: 430, background: theme.colors.secondary, border: `1px solid ${theme.colors.cardBorder}` }}
             >
               {/* Handle */}
               <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: theme.colors.border }} />
@@ -399,6 +400,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
                 Cancelar
               </button>
             </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>

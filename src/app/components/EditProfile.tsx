@@ -359,14 +359,14 @@ export function EditProfile({ currentUser, onBack, onSaved }: EditProfileProps) 
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowAvatarOptions(false)}
-              className="fixed inset-0 z-40"
+              className="fixed inset-0 z-[55]"
               style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
             />
-            <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
+            <div className="fixed bottom-0 left-0 right-0 z-[60] flex justify-center">
             <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-              className="w-full rounded-t-3xl px-5 pt-4 pb-10"
+              className="w-full rounded-t-3xl px-5 pt-4 pb-28"
               style={{ maxWidth: 430, background: theme.colors.secondary, border: `1px solid ${theme.colors.cardBorder}` }}
             >
               <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: theme.colors.border }} />
