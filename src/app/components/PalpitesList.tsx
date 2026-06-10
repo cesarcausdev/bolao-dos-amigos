@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { CheckCircle2, Circle } from 'lucide-react';
 import { api } from '../services/api';
@@ -12,6 +12,7 @@ interface PalpitesListProps {
   canManagePayments?: boolean;
   bolaoId?: string;
   currentUserId?: string;
+  onPaymentChange?: (userId: string, pagou: boolean) => void;
 }
 
 export function PalpitesList({
@@ -21,16 +22,14 @@ export function PalpitesList({
   canManagePayments = false,
   bolaoId,
   currentUserId,
+  onPaymentChange,
 }: PalpitesListProps) {
   const [participants, setParticipants] = useState<Participant[]>(initialParticipants);
   const [toggling, setToggling] = useState<Set<string>>(new Set());
-  const initialized = useRef(false);
 
+  // Always sync from parent (BolaoDetail polls and passes fresh data)
   useEffect(() => {
-    if (!initialized.current && initialParticipants.length > 0) {
-      setParticipants(initialParticipants);
-      initialized.current = true;
-    }
+    setParticipants(initialParticipants);
   }, [initialParticipants]);
 
   const isAberto = bolao?.status === 'Aberto';
@@ -46,6 +45,7 @@ export function PalpitesList({
 
     try {
       await api.boloes.updatePagamento(bolaoId, participant.id, newPagou);
+      onPaymentChange?.(participant.id, newPagou);
     } catch {
       setParticipants(prev =>
         prev.map(p => p.id === participant.id ? { ...p, pagou: !newPagou } : p)

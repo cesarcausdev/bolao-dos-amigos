@@ -30,10 +30,23 @@ export function Classificacao({
   useEffect(() => {
     if (propParticipants !== undefined) { setParticipants(propParticipants); return; }
     if (embedded) return;
-    api.ranking.getGlobal()
-      .then(setParticipants)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+
+    let cancelled = false;
+
+    const fetchRanking = () => {
+      api.ranking.getGlobal()
+        .then(data => {
+          if (!cancelled) {
+            setParticipants(data);
+            setLoading(false);
+          }
+        })
+        .catch(console.error);
+    };
+
+    fetchRanking();
+    const interval = setInterval(fetchRanking, 15_000);
+    return () => { cancelled = true; clearInterval(interval); };
   }, [propParticipants, embedded]);
 
   const sorted = [...participants].sort((a, b) => b.points - a.points);

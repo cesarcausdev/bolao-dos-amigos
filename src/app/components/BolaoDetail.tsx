@@ -47,15 +47,31 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
   const myPrediction = myParticipant?.prediction;
 
   useEffect(() => {
-    api.boloes.getDetail(initialBolao.id)
-      .then(({ bolao: b, participants: p }) => {
-        setBolao(b);
-        setParticipants(p);
-        if (b.status === 'Encerrado') setActiveTab('classificacao');
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    let cancelled = false;
+
+    const fetchDetail = () => {
+      api.boloes.getDetail(initialBolao.id)
+        .then(({ bolao: b, participants: p }) => {
+          if (cancelled) return;
+          setBolao(b);
+          setParticipants(p);
+          if (b.status === 'Encerrado') setActiveTab('classificacao');
+        })
+        .catch(console.error)
+        .finally(() => { if (!cancelled) setLoading(false); });
+    };
+
+    fetchDetail();
+    const interval = setInterval(fetchDetail, 10_000);
+    return () => { cancelled = true; clearInterval(interval); };
   }, [initialBolao.id]);
+
+  const handlePaymentChange = (userId: string, pagou: boolean) => {
+    setBolao(prev => ({
+      ...prev,
+      paidCount: pagou ? prev.paidCount + 1 : Math.max(0, prev.paidCount - 1),
+    }));
+  };
 
   function openResultSheet() {
     setHomeScoreInput('');
@@ -261,6 +277,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
               canManagePayments={canOrganize}
               bolaoId={bolao.id}
               currentUserId={currentUserId}
+              onPaymentChange={handlePaymentChange}
             />
           ) : (
             <Classificacao
@@ -280,6 +297,7 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
             canManagePayments={canOrganize}
             bolaoId={bolao.id}
             currentUserId={currentUserId}
+            onPaymentChange={handlePaymentChange}
           />
         )}
       </div>
