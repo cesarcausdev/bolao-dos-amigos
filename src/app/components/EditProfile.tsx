@@ -191,7 +191,7 @@ export function EditProfile({ currentUser, onBack, onSaved }: EditProfileProps) 
             </div>
             <button
               type="button"
-              onClick={() => setShowAvatarOptions(v => !v)}
+              onClick={() => setShowAvatarOptions(true)}
               className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
               style={{
                 background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%)`,
@@ -200,45 +200,6 @@ export function EditProfile({ currentUser, onBack, onSaved }: EditProfileProps) 
               <Camera size={16} style={{ color: theme.colors.background }} />
             </button>
           </div>
-
-          <AnimatePresence>
-            {showAvatarOptions && (
-              <motion.div
-                initial={{ opacity: 0, y: -6, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -4, scale: 0.97 }}
-                transition={{ duration: 0.18 }}
-                className="flex gap-3"
-              >
-                <button
-                  type="button"
-                  onClick={() => cameraRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
-                  style={{
-                    background: theme.colors.card,
-                    border: `1px solid ${theme.colors.cardBorder}`,
-                    color: theme.colors.text,
-                  }}
-                >
-                  <Camera size={15} style={{ color: theme.colors.primary }} />
-                  Câmera
-                </button>
-                <button
-                  type="button"
-                  onClick={() => galleryRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
-                  style={{
-                    background: theme.colors.card,
-                    border: `1px solid ${theme.colors.cardBorder}`,
-                    color: theme.colors.text,
-                  }}
-                >
-                  <ImageIcon size={15} style={{ color: theme.colors.primary }} />
-                  Galeria
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {avatarPreview && (
             <p className="text-xs" style={{ color: theme.colors.primary }}>
@@ -390,6 +351,66 @@ export function EditProfile({ currentUser, onBack, onSaved }: EditProfileProps) 
         className="hidden"
         onChange={handleFileChange}
       />
+
+      {/* Avatar options — bottom sheet */}
+      <AnimatePresence>
+        {showAvatarOptions && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowAvatarOptions(false)}
+              className="fixed inset-0 z-40"
+              style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+            />
+            <motion.div
+              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+              className="fixed bottom-0 left-1/2 z-50 w-full rounded-t-3xl px-5 pt-4 pb-10"
+              style={{ transform: 'translateX(-50%)', maxWidth: 430, background: theme.colors.secondary, border: `1px solid ${theme.colors.cardBorder}` }}
+            >
+              <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: theme.colors.border }} />
+              <p className="text-base font-black mb-4" style={{ color: theme.colors.text }}>Foto de perfil</p>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={() => { cameraRef.current?.click(); setShowAvatarOptions(false); }}
+                  className="flex items-center gap-4 px-4 py-4 rounded-xl w-full text-left"
+                  style={{ background: theme.colors.card, border: `1px solid ${theme.colors.cardBorder}` }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(242,194,48,0.12)' }}>
+                    <Camera size={20} style={{ color: theme.colors.primary }} />
+                  </div>
+                  <span className="text-sm font-semibold" style={{ color: theme.colors.text }}>Tirar foto</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { galleryRef.current?.click(); setShowAvatarOptions(false); }}
+                  className="flex items-center gap-4 px-4 py-4 rounded-xl w-full text-left"
+                  style={{ background: theme.colors.card, border: `1px solid ${theme.colors.cardBorder}` }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(242,194,48,0.12)' }}>
+                    <ImageIcon size={20} style={{ color: theme.colors.primary }} />
+                  </div>
+                  <span className="text-sm font-semibold" style={{ color: theme.colors.text }}>Da galeria</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowAvatarOptions(false)}
+                className="w-full py-4 mt-2 text-sm font-medium"
+                style={{ color: theme.colors.textSecondary }}
+              >
+                Cancelar
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

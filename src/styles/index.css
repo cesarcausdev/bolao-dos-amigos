@@ -1,3 +1,14 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Prevent iOS zoom on input focus — browser zooms when font-size < 16px */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+/* Disable pull-to-refresh and bounce scroll on the root */
+html {
+  touch-action: pan-x pan-y;
+  -webkit-text-size-adjust: 100%;
+}
