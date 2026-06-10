@@ -58,5 +58,11 @@ public class PalpiteRepository : IPalpiteRepository
         }
 
         await _db.SaveChangesAsync();
+
+        // Recalculate BestRank for all users based on updated TotalPoints
+        var allUsers = await _db.Users.OrderByDescending(u => u.TotalPoints).ToListAsync();
+        for (int i = 0; i < allUsers.Count; i++)
+            allUsers[i].BestRank = i + 1;
+        await _db.SaveChangesAsync();
     }
 }

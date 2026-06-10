@@ -33,5 +33,9 @@ public class UserRepository : IUserRepository
     }
 
     public Task<int> CountBoloesAsync(Guid userId) =>
-        _db.BolaoParticipants.CountAsync(p => p.UserId == userId);
+        _db.Palpites
+           .Where(p => p.UserId == userId)
+           .Select(p => p.BolaoId)
+           .Distinct()
+           .CountAsync();
 }

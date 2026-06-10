@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
 import { LogOut, Trophy, Users, Star, ChevronRight, UserCog, Shield } from 'lucide-react';
 import { motion } from 'motion/react';
+import { api } from '../services/api';
 import { theme } from '../theme';
 import type { Screen, User } from './types';
 
@@ -10,10 +12,18 @@ interface ProfileProps {
 }
 
 export function Profile({ onLogout, onNavigate, currentUser }: ProfileProps) {
+  const [liveUser, setLiveUser] = useState<User | null>(currentUser);
+
+  useEffect(() => {
+    api.profile.get()
+      .then(setLiveUser)
+      .catch(console.error);
+  }, []);
+
   const stats = [
-    { label: 'Pontos totais', value: currentUser?.points ?? 0, icon: '⭐', color: theme.colors.primary },
-    { label: 'Bolões', value: currentUser?.boloesCount ?? 0, icon: '⚽', color: theme.colors.success },
-    { label: 'Melhor posição', value: currentUser?.bestRank ? `#${currentUser.bestRank}` : '—', icon: '🏆', color: theme.colors.primaryLight },
+    { label: 'Pontos totais', value: liveUser?.points ?? 0, icon: '⭐', color: theme.colors.primary },
+    { label: 'Bolões', value: liveUser?.boloesCount ?? 0, icon: '⚽', color: theme.colors.success },
+    { label: 'Melhor posição', value: liveUser?.bestRank ? `#${liveUser.bestRank}` : '—', icon: '🏆', color: theme.colors.primaryLight },
   ];
 
   const menuItems: { icon: typeof UserCog; label: string; color: string; action?: () => void }[] = [

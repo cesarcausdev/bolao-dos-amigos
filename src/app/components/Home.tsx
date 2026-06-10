@@ -16,12 +16,19 @@ export function Home({ onNavigate, currentUser }: HomeProps) {
   const [activeTab, setActiveTab] = useState<'boloes' | 'ranking'>('boloes');
   const [boloes, setBoloes] = useState<Bolao[]>([]);
   const [loading, setLoading] = useState(true);
+  const [liveUser, setLiveUser] = useState<User | null>(currentUser);
 
   useEffect(() => {
     api.boloes.getAll()
       .then(setBoloes)
       .catch(console.error)
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    api.profile.get()
+      .then(setLiveUser)
+      .catch(console.error);
   }, []);
 
   const nextMatch = boloes.find(b => b.status === 'Aberto');
@@ -58,17 +65,17 @@ export function Home({ onNavigate, currentUser }: HomeProps) {
           <div className="absolute right-4 top-4 text-6xl opacity-10">🏆</div>
           <p className="text-xs font-medium mb-1" style={{ color: theme.colors.primary }}>Sua pontuação</p>
           <div className="flex items-end gap-2 mb-3">
-            <span className="text-4xl font-black" style={{ color: theme.colors.primary }}>{currentUser?.points ?? 0}</span>
+            <span className="text-4xl font-black" style={{ color: theme.colors.primary }}>{liveUser?.points ?? 0}</span>
             <span className="text-sm mb-1" style={{ color: theme.colors.primaryDark }}>pts</span>
           </div>
           <div className="flex gap-4">
             <div className="flex items-center gap-1">
               <TrendingUp size={12} style={{ color: theme.colors.primaryDark }} />
-              <span className="text-xs" style={{ color: theme.colors.primaryDark }}>{currentUser?.bestRank ? `${currentUser.bestRank}º lugar geral` : '—'}</span>
+              <span className="text-xs" style={{ color: theme.colors.primaryDark }}>{liveUser?.bestRank ? `${currentUser.bestRank}º lugar geral` : '—'}</span>
             </div>
             <div className="flex items-center gap-1">
               <Zap size={12} style={{ color: theme.colors.primaryDark }} />
-              <span className="text-xs" style={{ color: theme.colors.primaryDark }}>{currentUser?.boloesCount ?? 0} bolões</span>
+              <span className="text-xs" style={{ color: theme.colors.primaryDark }}>{liveUser?.boloesCount ?? 0} bolões</span>
             </div>
           </div>
         </motion.div>
