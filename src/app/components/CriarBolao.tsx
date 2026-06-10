@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, Search, X, Calendar, Clock, DollarSign } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Search, X, Calendar, Clock, DollarSign, QrCode } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { api } from '../services/api';
 import { theme } from '../theme';
@@ -113,10 +113,11 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
     return nowTimeStr();
   });
 
-  // Valor
+  // Valor e Pix
   const [valor, setValor] = useState<string>(
     editando ? String(editando.valorBolao) : ''
   );
+  const [pix, setPix] = useState(editando?.pixKey ?? '');
 
   // Organizer
   const [users, setUsers] = useState<UserSummary[]>([]);
@@ -181,6 +182,7 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
         matchDate,
         organizerId: organizer?.id ?? null,
         valorBolao: parseFloat(valor) || 0,
+        pixKey: pix.trim() || null,
       };
 
       if (isEdit && editando) {
@@ -329,7 +331,7 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
           </div>
 
           {/* Valor */}
-          <div>
+          <div className="mb-3">
             <label className="text-xs mb-1.5 block" style={{ color: theme.colors.textSecondary }}>Valor do bolão (R$)</label>
             <div className="flex items-center gap-2 px-4 py-3 rounded-xl"
               style={{ background: theme.colors.inputBg, border: `1px solid ${theme.colors.inputBorder}` }}>
@@ -346,6 +348,33 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
                 style={{ color: theme.colors.text }}
               />
             </div>
+          </div>
+
+          {/* Chave Pix */}
+          <div>
+            <label className="text-xs mb-1.5 block" style={{ color: theme.colors.textSecondary }}>
+              Chave Pix do organizador
+            </label>
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl"
+              style={{ background: theme.colors.inputBg, border: `1px solid ${theme.colors.inputBorder}` }}>
+              <QrCode size={15} style={{ color: theme.colors.textSecondary, flexShrink: 0 }} />
+              <input
+                type="text"
+                value={pix}
+                onChange={e => setPix(e.target.value)}
+                placeholder="CPF, e-mail, telefone ou chave aleatória"
+                className="flex-1 bg-transparent outline-none text-sm"
+                style={{ color: theme.colors.text }}
+              />
+              {pix && (
+                <button onClick={() => setPix('')} className="flex-shrink-0">
+                  <X size={13} style={{ color: theme.colors.textSecondary }} />
+                </button>
+              )}
+            </div>
+            <p className="text-[10px] mt-1 ml-1" style={{ color: theme.colors.textSecondary }}>
+              opcional — aparece para os participantes saberem como pagar
+            </p>
           </div>
         </div>
 

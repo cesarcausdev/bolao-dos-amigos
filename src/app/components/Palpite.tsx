@@ -7,13 +7,15 @@ import type { Bolao, Screen } from './types';
 
 interface PalpiteProps {
   bolao: Bolao;
+  myPrediction?: { home: number; away: number };
   onBack: () => void;
   onNavigate: (screen: Screen, data?: unknown) => void;
 }
 
-export function Palpite({ bolao, onBack, onNavigate }: PalpiteProps) {
-  const [homeGoals, setHomeGoals] = useState<number | ''>('');
-  const [awayGoals, setAwayGoals] = useState<number | ''>('');
+export function Palpite({ bolao, myPrediction, onBack, onNavigate }: PalpiteProps) {
+  const isEdit = !!myPrediction;
+  const [homeGoals, setHomeGoals] = useState<number | ''>(myPrediction?.home ?? '');
+  const [awayGoals, setAwayGoals] = useState<number | ''>(myPrediction?.away ?? '');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,11 +25,15 @@ export function Palpite({ bolao, onBack, onNavigate }: PalpiteProps) {
     setLoading(true);
     setError('');
     try {
-      await api.boloes.submitPalpite(bolao.id, homeGoals, awayGoals);
+      if (isEdit) {
+        await api.boloes.updatePalpite(bolao.id, homeGoals, awayGoals);
+      } else {
+        await api.boloes.submitPalpite(bolao.id, homeGoals, awayGoals);
+      }
       setSubmitted(true);
       setTimeout(() => onNavigate('bolao-detail', bolao), 2000);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao registrar palpite.');
+      setError(err instanceof Error ? err.message : `Erro ao ${isEdit ? 'atualizar' : 'registrar'} palpite.`);
     } finally {
       setLoading(false);
     }
@@ -46,7 +52,9 @@ export function Palpite({ bolao, onBack, onNavigate }: PalpiteProps) {
           <ArrowLeft size={20} />
           <span className="text-sm">Voltar</span>
         </button>
-        <h1 className="text-2xl font-black" style={{ color: theme.colors.text }}>Seu palpite</h1>
+        <h1 className="text-2xl font-black" style={{ color: theme.colors.text }}>
+          {isEdit ? 'Editar palpite' : 'Seu palpite'}
+        </h1>
         <p className="text-sm" style={{ color: theme.colors.textSecondary }}>{bolao.date} • {bolao.time}</p>
       </div>
 
@@ -121,7 +129,9 @@ export function Palpite({ bolao, onBack, onNavigate }: PalpiteProps) {
               border: `1px solid ${btnReady ? 'transparent' : theme.colors.cardBorder}`,
               opacity: loading ? 0.7 : 1,
             }}>
-            {loading ? 'Registrando…' : 'Confirmar Palpite'}
+            {loading
+              ? (isEdit ? 'Salvando…' : 'Registrando…')
+              : (isEdit ? 'Salvar alteração' : 'Confirmar Palpite')}
           </motion.button>
         </div>
       </div>
@@ -134,7 +144,9 @@ export function Palpite({ bolao, onBack, onNavigate }: PalpiteProps) {
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
               <CheckCircle size={80} style={{ color: theme.colors.primary }} />
             </motion.div>
-            <h2 className="text-2xl font-black" style={{ color: theme.colors.text }}>Palpite registrado!</h2>
+            <h2 className="text-2xl font-black" style={{ color: theme.colors.text }}>
+              {isEdit ? 'Palpite atualizado!' : 'Palpite registrado!'}
+            </h2>
             <p className="text-sm" style={{ color: theme.colors.textSecondary }}>
               {bolao.homeTeam.name} {homeGoals} × {awayGoals} {bolao.awayTeam.name}
             </p>

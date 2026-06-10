@@ -25,6 +25,9 @@ public class PalpiteService : IPalpiteService
         if (bolao.Status != BolaoStatus.Aberto)
             throw new AppException("Palpites só podem ser enviados enquanto o bolão está Aberto.");
 
+        if (bolao.MatchDate <= DateTime.UtcNow)
+            throw new AppException("O prazo para palpites encerrou. O jogo já começou.");
+
         if (!await _boloes.IsParticipantAsync(bolaoId, userId))
             throw new AppException("Você precisa entrar no bolão antes de enviar um palpite.");
 
@@ -55,6 +58,9 @@ public class PalpiteService : IPalpiteService
 
         if (bolao.Status != BolaoStatus.Aberto)
             throw new AppException("Palpites não podem ser alterados após o início da partida.");
+
+        if (bolao.MatchDate <= DateTime.UtcNow)
+            throw new AppException("O prazo para alterações encerrou. O jogo já começou.");
 
         var palpite = await _palpites.GetByBolaoAndUserAsync(bolaoId, userId)
             ?? throw AppException.NotFound("Palpite");

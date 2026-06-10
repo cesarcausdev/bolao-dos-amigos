@@ -41,10 +41,12 @@ export interface Bolao {
   awayTeam: Team;
   date: string;
   time: string;
+  matchDateIso: string;
   participants: number;
   organizer: string;
   organizerId?: string;
   valorBolao: number;
+  pixKey?: string;
   status: 'Aberto' | 'Encerrado' | 'Em Andamento';
   homeScore?: number;
   awayScore?: number;

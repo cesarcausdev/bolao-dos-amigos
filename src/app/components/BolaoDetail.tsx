@@ -20,10 +20,18 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const canEdit = currentUserId && (
+  const matchStarted = new Date(bolao.matchDateIso) <= new Date();
+  const isAberto = bolao.status === 'Aberto' && !matchStarted;
+
+  const canEdit = currentUserId && isAberto && (
     bolao.organizerId === currentUserId ||
-    bolao.organizer === currentUserId  // fallback: antes de ter organizerId populado
+    bolao.organizer === currentUserId
   );
+
+  const myParticipant = currentUserId
+    ? participants.find(p => p.id === currentUserId)
+    : undefined;
+  const myPrediction = myParticipant?.prediction;
 
   useEffect(() => {
     api.boloes.getDetail(initialBolao.id)
@@ -92,10 +100,14 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
             <span className="text-xs" style={{ color: theme.colors.textSecondary }}>{bolao.participants} participantes</span>
           </div>
           {bolao.valorBolao > 0 && (
-            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full"
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
               style={{ background: 'rgba(242,194,48,0.12)', border: `1px solid rgba(242,194,48,0.25)` }}>
               <span className="text-xs font-bold" style={{ color: theme.colors.primary }}>
-                R$ {bolao.valorBolao.toFixed(2)}
+                R$ {bolao.valorBolao.toFixed(2)}/palpite
+              </span>
+              <span className="text-xs" style={{ color: 'rgba(242,194,48,0.5)' }}>·</span>
+              <span className="text-xs font-bold" style={{ color: theme.colors.primary }}>
+                🏆 R$ {(bolao.valorBolao * bolao.participants).toFixed(2)}
               </span>
             </div>
           )}
@@ -103,11 +115,11 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
       </div>
 
       {/* CTA palpite */}
-      {bolao.status === 'Aberto' && (
-        <div className="px-5 pb-4">
+      {isAberto && !loading && (
+        <div className="px-5 pb-4 flex flex-col gap-2">
           <motion.button
             whileTap={{ scale: 0.97 }}
-            onClick={() => onNavigate('palpite', bolao)}
+            onClick={() => onNavigate('palpite', { bolao, myPrediction })}
             className="w-full py-4 rounded-xl font-bold text-base"
             style={{
               background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%)`,
@@ -115,8 +127,25 @@ export function BolaoDetail({ bolao: initialBolao, onNavigate, onBack, currentUs
               boxShadow: `0 4px 20px rgba(242,194,48,0.3)`,
             }}
           >
-            ⚽ Fazer meu palpite
+            {myPrediction
+              ? `✏️ Editar meu palpite (${bolao.homeTeam.flag} ${myPrediction.home} × ${myPrediction.away} ${bolao.awayTeam.flag})`
+              : '⚽ Fazer meu palpite'}
           </motion.button>
+
+          {bolao.pixKey && bolao.valorBolao > 0 && (
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
+              style={{ background: 'rgba(242,194,48,0.06)', border: `1px solid rgba(242,194,48,0.2)` }}>
+              <span className="text-xl flex-shrink-0">💸</span>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold" style={{ color: theme.colors.primary }}>
+                  Pagamento — R$ {bolao.valorBolao.toFixed(2)}
+                </p>
+                <p className="text-xs truncate mt-0.5" style={{ color: theme.colors.textSecondary }}>
+                  Pix: {bolao.pixKey}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

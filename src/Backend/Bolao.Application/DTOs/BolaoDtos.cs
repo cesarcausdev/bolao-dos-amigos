@@ -20,6 +20,7 @@ public record BolaoDto(
     Guid? OrganizerId,
     string? OrganizerName,
     decimal ValorBolao,
+    string? PixKey,
     int ParticipantCount
 );
 
@@ -35,6 +36,7 @@ public record BolaoDetailDto(
     Guid? OrganizerId,
     string? OrganizerName,
     decimal ValorBolao,
+    string? PixKey,
     List<ParticipantDto> Participants
 );
 
@@ -56,7 +58,8 @@ public record CreateBolaoDto(
     string AwayTeamFlag,
     DateTime MatchDate,
     Guid? OrganizerId,
-    decimal ValorBolao
+    decimal ValorBolao,
+    string? PixKey
 );
 
 public record UpdateBolaoDto(
@@ -68,7 +71,8 @@ public record UpdateBolaoDto(
     string AwayTeamFlag,
     DateTime MatchDate,
     Guid? OrganizerId,
-    decimal ValorBolao
+    decimal ValorBolao,
+    string? PixKey
 );
 
 public record SetResultadoDto(

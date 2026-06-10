@@ -60,6 +60,7 @@ public class BolaoService : IBolaoService
             bolao.OrganizerId,
             bolao.Organizer?.Name,
             bolao.ValorBolao,
+            bolao.PixKey,
             participants
         );
     }
@@ -83,6 +84,7 @@ public class BolaoService : IBolaoService
             CreatedById = createdById,
             OrganizerId = dto.OrganizerId,
             ValorBolao = dto.ValorBolao,
+            PixKey = dto.PixKey,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -128,6 +130,7 @@ public class BolaoService : IBolaoService
         bolao.MatchDate    = dto.MatchDate.ToUniversalTime();
         bolao.OrganizerId  = dto.OrganizerId;
         bolao.ValorBolao   = dto.ValorBolao;
+        bolao.PixKey       = dto.PixKey;
         bolao.UpdatedAt    = DateTime.UtcNow;
 
         await _boloes.UpdateAsync(bolao);
@@ -206,6 +209,7 @@ public class BolaoService : IBolaoService
         b.OrganizerId,
         b.Organizer?.Name,
         b.ValorBolao,
+        b.PixKey,
         b.Participants?.Count ?? 0
     );
 }

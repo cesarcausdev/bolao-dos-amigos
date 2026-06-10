@@ -9,6 +9,7 @@ public interface IBolaoRepository
     Task<BolaoEntity?> GetByIdAsync(Guid id);
     Task<BolaoEntity?> GetByIdWithDetailsAsync(Guid id);
     Task<List<BolaoEntity>> GetAllAsync(BolaoStatus? status = null);
+    Task<List<BolaoEntity>> GetAbertosExpiredAsync();
     Task AddAsync(BolaoEntity bolao);
     Task UpdateAsync(BolaoEntity bolao);
     Task<bool> IsParticipantAsync(Guid bolaoId, Guid userId);

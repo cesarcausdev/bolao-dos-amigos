@@ -5,6 +5,7 @@ using Bolao.Infrastructure.Data;
 using Bolao.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Bolao.Api.Extensions;
@@ -35,6 +36,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPalpiteService, PalpiteService>();
         services.AddScoped<IRankingService, RankingService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddHostedService<BolaoStatusTransitionService>();
 
         return services;
     }

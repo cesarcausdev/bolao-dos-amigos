@@ -14,7 +14,7 @@ interface ApiBolao {
   id: string; homeTeam: ApiTeam; awayTeam: ApiTeam; matchDate: string;
   status: string; homeScore: number | null; awayScore: number | null;
   createdBy: string; organizerId: string | null; organizerName: string | null;
-  valorBolao: number; participantCount: number;
+  valorBolao: number; pixKey: string | null; participantCount: number;
 }
 interface ApiParticipant {
   userId: string; name: string; avatar: string | null;
@@ -80,10 +80,12 @@ function mapBolao(b: ApiBolao): Bolao {
     homeTeam: { name: b.homeTeam.name, shortName: b.homeTeam.id.slice(0, 3).toUpperCase(), flag: b.homeTeam.flag },
     awayTeam: { name: b.awayTeam.name, shortName: b.awayTeam.id.slice(0, 3).toUpperCase(), flag: b.awayTeam.flag },
     date: fmtDate(b.matchDate), time: fmtTime(b.matchDate),
+    matchDateIso: b.matchDate,
     participants: b.participantCount,
     organizer: b.organizerName ?? b.createdBy,
     organizerId: b.organizerId ?? undefined,
     valorBolao: b.valorBolao ?? 0,
+    pixKey: b.pixKey ?? undefined,
     status: fmtStatus(b.status),
     homeScore: b.homeScore ?? undefined,
     awayScore: b.awayScore ?? undefined,
@@ -130,10 +132,12 @@ export const api = {
         homeTeam: { name: r.homeTeam.name, shortName: r.homeTeam.id.slice(0, 3).toUpperCase(), flag: r.homeTeam.flag },
         awayTeam: { name: r.awayTeam.name, shortName: r.awayTeam.id.slice(0, 3).toUpperCase(), flag: r.awayTeam.flag },
         date: fmtDate(r.matchDate), time: fmtTime(r.matchDate),
+        matchDateIso: r.matchDate,
         participants: r.participants.length,
         organizer: r.organizerName ?? r.createdBy,
         organizerId: r.organizerId ?? undefined,
         valorBolao: r.valorBolao ?? 0,
+        pixKey: r.pixKey ?? undefined,
         status: fmtStatus(r.status),
         homeScore: r.homeScore ?? undefined,
         awayScore: r.awayScore ?? undefined,
@@ -143,12 +147,12 @@ export const api = {
     create: (dto: {
       homeTeamId: string; homeTeamName: string; homeTeamFlag: string;
       awayTeamId: string; awayTeamName: string; awayTeamFlag: string;
-      matchDate: string; organizerId?: string | null; valorBolao: number;
+      matchDate: string; organizerId?: string | null; valorBolao: number; pixKey?: string | null;
     }) => request<ApiBolao>('/boloes', { method: 'POST', body: JSON.stringify(dto) }),
     update: (id: string, dto: {
       homeTeamId: string; homeTeamName: string; homeTeamFlag: string;
       awayTeamId: string; awayTeamName: string; awayTeamFlag: string;
-      matchDate: string; organizerId?: string | null; valorBolao: number;
+      matchDate: string; organizerId?: string | null; valorBolao: number; pixKey?: string | null;
     }) => request<ApiBolao>(`/boloes/${id}`, { method: 'PUT', body: JSON.stringify(dto) }),
     join: (id: string) => request<null>(`/boloes/${id}/join`, { method: 'POST' }),
     submitPalpite: (bolaoId: string, placarHome: number, placarAway: number) =>

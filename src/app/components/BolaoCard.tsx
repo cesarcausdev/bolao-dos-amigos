@@ -77,9 +77,26 @@ export function BolaoCard({ bolao, onNavigate, index = 0 }: BolaoCardProps) {
         </div>
       </div>
 
-      <div className="mt-2 flex items-center gap-1">
-        <span className="text-xs" style={{ color: '#4B6B55' }}>Organizado por</span>
-        <span className="text-xs font-medium" style={{ color: theme.colors.textSecondary }}>{bolao.organizer}</span>
+      <div className="mt-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1 min-w-0">
+          <span className="text-xs flex-shrink-0" style={{ color: '#4B6B55' }}>Org:</span>
+          <span className="text-xs font-medium truncate" style={{ color: theme.colors.textSecondary }}>{bolao.organizer}</span>
+        </div>
+        {bolao.valorBolao > 0 && (
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-xs font-semibold" style={{ color: theme.colors.primary }}>
+              R$ {bolao.valorBolao.toFixed(2)}/palpite
+            </span>
+            {bolao.participants > 0 && (
+              <>
+                <span className="text-xs" style={{ color: theme.colors.border }}>·</span>
+                <span className="text-xs font-bold" style={{ color: theme.colors.primary }}>
+                  🏆 R$ {(bolao.valorBolao * bolao.participants).toFixed(2)}
+                </span>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </motion.button>
   );

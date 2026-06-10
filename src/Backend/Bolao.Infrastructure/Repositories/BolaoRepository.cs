@@ -38,6 +38,11 @@ public class BolaoRepository : IBolaoRepository
         return query.OrderByDescending(b => b.MatchDate).ToListAsync();
     }
 
+    public Task<List<Bolao.Domain.Entities.Bolao>> GetAbertosExpiredAsync() =>
+        _db.Boloes
+           .Where(b => b.Status == BolaoStatus.Aberto && b.MatchDate <= DateTime.UtcNow)
+           .ToListAsync();
+
     public async Task AddAsync(Bolao.Domain.Entities.Bolao bolao)
     {
         _db.Boloes.Add(bolao);

@@ -78,8 +78,10 @@ export default function App() {
         return <Classificacao currentUserId={currentUser?.id} />;
       case 'bolao-detail':
         return <BolaoDetail bolao={screenData as Bolao} onNavigate={navigate} onBack={goBack} currentUserId={currentUser?.id} />;
-      case 'palpite':
-        return <Palpite bolao={screenData as Bolao} onBack={goBack} onNavigate={navigate} />;
+      case 'palpite': {
+        const palpiteData = screenData as { bolao: Bolao; myPrediction?: { home: number; away: number } };
+        return <Palpite bolao={palpiteData.bolao} myPrediction={palpiteData.myPrediction} onBack={goBack} onNavigate={navigate} />;
+      }
       case 'palpites-list':
         return <PalpitesList />;
       case 'profile':

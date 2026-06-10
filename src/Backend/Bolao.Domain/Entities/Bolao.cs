@@ -27,6 +27,7 @@ public class Bolao
     public User? Organizer { get; set; }
 
     public decimal ValorBolao { get; set; }
+    public string? PixKey { get; set; }
 
     public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }
