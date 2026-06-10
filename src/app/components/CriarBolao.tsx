@@ -466,12 +466,13 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
               onClick={() => { setPicker(null); setSearch(''); }}
             />
 
+            <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
             <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-              className="fixed bottom-0 left-1/2 z-50 w-full flex flex-col"
+              className="w-full flex flex-col"
               style={{
-                transform: 'translateX(-50%)', maxWidth: 430, maxHeight: '80vh',
+                maxWidth: 430, maxHeight: '80vh',
                 background: '#0A1E10',
                 borderTop: `1px solid ${theme.colors.cardBorder}`,
                 borderTopLeftRadius: 24, borderTopRightRadius: 24,
@@ -498,7 +499,7 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
                 <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl"
                   style={{ background: theme.colors.inputBg, border: `1px solid ${theme.colors.inputBorder}` }}>
                   <Search size={15} style={{ color: theme.colors.textSecondary }} />
-                  <input autoFocus type="text" value={search} onChange={e => setSearch(e.target.value)}
+                  <input type="text" value={search} onChange={e => setSearch(e.target.value)}
                     placeholder={picker === 'organizer' ? 'Buscar usuário...' : 'Buscar time...'}
                     className="flex-1 bg-transparent outline-none text-sm" style={{ color: theme.colors.text }} />
                   {search && (
@@ -534,6 +535,7 @@ export function CriarBolao({ onBack, onNavigate, editando }: CriarBolaoProps) {
                 {picker === 'organizer' && filteredUsers.length === 0 && <EmptySearch />}
               </div>
             </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>

@@ -362,11 +362,12 @@ export function EditProfile({ currentUser, onBack, onSaved }: EditProfileProps) 
               className="fixed inset-0 z-40"
               style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
             />
+            <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
             <motion.div
               initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 380, damping: 36 }}
-              className="fixed bottom-0 left-1/2 z-50 w-full rounded-t-3xl px-5 pt-4 pb-10"
-              style={{ transform: 'translateX(-50%)', maxWidth: 430, background: theme.colors.secondary, border: `1px solid ${theme.colors.cardBorder}` }}
+              className="w-full rounded-t-3xl px-5 pt-4 pb-10"
+              style={{ maxWidth: 430, background: theme.colors.secondary, border: `1px solid ${theme.colors.cardBorder}` }}
             >
               <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: theme.colors.border }} />
               <p className="text-base font-black mb-4" style={{ color: theme.colors.text }}>Foto de perfil</p>
@@ -408,6 +409,7 @@ export function EditProfile({ currentUser, onBack, onSaved }: EditProfileProps) 
                 Cancelar
               </button>
             </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
