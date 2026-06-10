@@ -174,6 +174,10 @@ export const api = {
       request<null>(`/boloes/${bolaoId}/participantes/${userId}/pagamento`, {
         method: 'PATCH', body: JSON.stringify({ pagou }),
       }),
+    setResultado: (bolaoId: string, homeScore: number, awayScore: number) =>
+      request<null>(`/boloes/${bolaoId}/resultado`, {
+        method: 'PUT', body: JSON.stringify({ homeScore, awayScore }),
+      }),
   },
 
   ranking: {
