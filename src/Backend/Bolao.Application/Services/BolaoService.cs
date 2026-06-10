@@ -33,7 +33,13 @@ public class BolaoService : IBolaoService
 
         var palpitesPorUser = bolao.Palpites.ToDictionary(p => p.UserId);
 
+        var canSeePagou = requestingUserId.HasValue && (
+            requestingUserId.Value == bolao.CreatedById ||
+            requestingUserId.Value == bolao.OrganizerId
+        );
+
         var participants = bolao.Participants
+            .Where(p => palpitesPorUser.ContainsKey(p.UserId))
             .OrderByDescending(p => palpitesPorUser.TryGetValue(p.UserId, out var pal) ? pal.Pontos ?? 0 : 0)
             .Select((p, idx) =>
             {
@@ -45,11 +51,13 @@ public class BolaoService : IBolaoService
                     palpite is not null ? new PalpiteResultDto(palpite.PlacarHome, palpite.PlacarAway) : null,
                     palpite?.Pontos ?? 0,
                     idx + 1,
-                    p.Pagou
+                    canSeePagou && p.Pagou
                 );
             }).ToList();
 
-        var paidCount = bolao.Participants.Count(p => p.Pagou);
+        var paidCount = bolao.Participants
+            .Where(p => palpitesPorUser.ContainsKey(p.UserId))
+            .Count(p => p.Pagou);
 
         return new BolaoDetailDto(
             bolao.Id,

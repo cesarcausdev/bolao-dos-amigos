@@ -29,7 +29,13 @@ public class PalpiteService : IPalpiteService
             throw new AppException("O prazo para palpites encerrou. O jogo já começou.");
 
         if (!await _boloes.IsParticipantAsync(bolaoId, userId))
-            throw new AppException("Você precisa entrar no bolão antes de enviar um palpite.");
+            await _boloes.AddParticipantAsync(new BolaoParticipant
+            {
+                Id = Guid.NewGuid(),
+                BolaoId = bolaoId,
+                UserId = userId,
+                JoinedAt = DateTime.UtcNow
+            });
 
         var existing = await _palpites.GetByBolaoAndUserAsync(bolaoId, userId);
         if (existing is not null)
